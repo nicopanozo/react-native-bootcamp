@@ -4,6 +4,14 @@ This is a React Native project built using [Expo](https://expo.dev/) with TypeSc
 
 ## 🚀 Getting Started
 
+### Installation commands
+npm install axios
+npm install dotenv
+npx expo install expo-constants
+expo install react-native-safe-area-context
+
+
+
 ### Create the project
 
 ```bash
