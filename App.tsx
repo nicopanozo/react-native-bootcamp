@@ -1,11 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import Home from './src/screens/Home';
 
 export default function App() {
   return (
     <View style={styles.container}>
       <Text>Hello React native 2025</Text>
       <StatusBar style="auto" />
+      <Home/>
     </View>
   );
 }
@@ -15,6 +17,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
+    paddingHorizontal: 16,
     justifyContent: 'center',
   },
 });
