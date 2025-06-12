@@ -11,6 +11,10 @@ npm install dotenv
 npx expo install expo-constants
 expo install react-native-safe-area-context
 npm install --save-dev prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser
+Carousel
+npx expo install react-native-reanimated react-native-gesture-handler
+npm install react-native-reanimated-carousel
+npm install @react-native/metro-config
 
 ### Create the project
 
