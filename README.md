@@ -16,6 +16,8 @@ npx expo install react-native-reanimated react-native-gesture-handler
 npm install react-native-reanimated-carousel
 npm install @react-native/metro-config
 
+npx expo install react-native-linear-gradient
+
 ### Create the project
 
 ```bash
