@@ -1,70 +1,69 @@
 // src/screens/Home.tsx
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+} from 'react-native';
+import { fetchPopularMovies } from '../api/tmdb';
 import Slider from './Slider';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const Home = () => {
+  const [movies, setMovies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPopularMovies()
+      .then(setMovies)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <ActivityIndicator size="large" />;
+
   return (
-    <View style={styles.container}>
-      <View style={styles.topSection}>
-        <Text style={styles.tabs}>My List     Discover</Text>
-      </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Slider movies={movies.slice(0, 20)} />
 
-      <View style={styles.middleSection}>
-        <Slider />
-      </View>
-
-      <View style={styles.bottomSection}>
-        <View style={styles.buttons}>
-          <View style={styles.button}>
-            <Button title="WishList" color="green" onPress={() => alert('Go to WishList')} />
+      <FlatList
+        data={movies}
+        keyExtractor={item => item.id.toString()}
+        contentContainerStyle={{ paddingBottom: 30 }}
+        renderItem={({ item }) => (
+          <View style={styles.item}>
+            <Image
+              source={{ uri: `${IMAGE_BASE_URL}${item.poster_path}` }}
+              style={styles.image}
+            />
+            <Text style={styles.title}>{item.title}</Text>
           </View>
-          <View style={styles.button}>
-            <Button title="Details" color="green" onPress={() => alert('Go to Details')} />
-          </View>
-        </View>
-      </View>
-    </View>
+        )}
+      />
+    </SafeAreaView>
   );
 };
 
 export default Home;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  topSection: {
-    flex: 0.5,
-    borderWidth: 1,
-    borderColor: 'black',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 10,
-  },
-  middleSection: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: 'black',
-    justifyContent: 'center',
+  item: {
+    marginVertical: 10,
     alignItems: 'center',
   },
-  bottomSection: {
-    flex: 0.7,
-    borderWidth: 1,
-    borderColor: 'black',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingTop: 10,
+  image: {
+    width: 300,
+    height: 450,
+    borderRadius: 10,
   },
-  tabs: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  buttons: {
-    flexDirection: 'row',
-  },
-  button: {
-    marginHorizontal: 10,
+  title: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
