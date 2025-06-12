@@ -6,10 +6,19 @@ const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const Slider = ({ movies }: { movies: any[] }) => {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
-      {movies.map((movie) => (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.scroll}
+    >
+      {movies.map(movie => (
         <View key={movie.id} style={styles.card}>
-          <Image source={{ uri: `${IMAGE_BASE_URL}${movie.backdrop_path || movie.poster_path}` }} style={styles.image} />
+          <Image
+            source={{
+              uri: `${IMAGE_BASE_URL}${movie.backdrop_path || movie.poster_path}`,
+            }}
+            style={styles.image}
+          />
           <Text style={styles.title} numberOfLines={1}>
             {movie.title}
           </Text>
@@ -28,16 +37,25 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 10,
     width: 300,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: 180,
-    borderRadius: 10,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   },
   title: {
-    marginTop: 5,
+    marginTop: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+    backgroundColor: '#fff',
   },
 });

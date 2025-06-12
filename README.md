@@ -5,12 +5,12 @@ This is a React Native project built using [Expo](https://expo.dev/) with TypeSc
 ## 🚀 Getting Started
 
 ### Installation commands
+
 npm install axios
 npm install dotenv
 npx expo install expo-constants
 expo install react-native-safe-area-context
-
-
+npm install --save-dev prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser
 
 ### Create the project
 
@@ -21,6 +21,7 @@ cd my-app
 ```
 
 ### Start the development server
+
 npx expo start
 You can scan the QR code with the Expo Go app on your mobile device, or open it on an emulator.
 
@@ -31,11 +32,13 @@ You can scan the QR code with the Expo Go app on your mobile device, or open it 
 - Android Studio (optional, for emulator)
 
 ### Install Expo CLI globally (optional)
+
 ```bash
 npm install -g expo-cli
 ```
 
 ### 📦 Install dependencies
+
 If you need to install extra packages, use:
 
 ```bash
@@ -43,15 +46,18 @@ npm install <package-name>
 ```
 
 ### 🧪 Testing on Android Emulator
+
 - Install Android Studio
 - Create a virtual device (AVD)
 - Run the emulator
 - Start the app on the emulator:
+
 ```bash
 npx expo start --android
 ```
 
 ### 🛠 Project Structure
+
 ```
 react-native-bootcamp
 ├──assets
