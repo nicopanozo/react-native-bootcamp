@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Text, View, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import {
+  Dimensions,
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
-import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from 'react-native-reanimated-carousel';
 import { fetchPopularMovies } from '../api/tmdb';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 const width = Dimensions.get('window').width;
 
-// Define the type for movies
 interface Movie {
   id: number;
   title: string;
@@ -18,14 +28,14 @@ interface Movie {
 const CarouselComponent = () => {
   const ref = React.useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
-  const [movies, setMovies] = useState<Movie[]>([]); // Specify the type for movies
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadMovies = async () => {
       try {
         const data = await fetchPopularMovies();
-        setMovies(data); // TypeScript now knows the structure of the data
+        setMovies(data);
       } catch (error) {
         console.error('Error fetching movies:', error);
       } finally {
@@ -55,7 +65,7 @@ const CarouselComponent = () => {
     <View style={styles.container}>
       <Carousel
         ref={ref}
-        width={width}
+        width={width * 0.9} // Adjust width to fit within the screen
         height={width / 2}
         data={movies}
         onProgressChange={progress}
@@ -88,8 +98,11 @@ const CarouselComponent = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center', // Center the carousel vertically
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 50, // Add padding to avoid sticking to the top
+    paddingBottom: 50, // Add padding to avoid cutting off at the bottom
+    backgroundColor: '#f8f9fa', // Optional: Add a background color for better visibility
   },
   loadingContainer: {
     flex: 1,
@@ -112,6 +125,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginVertical: 10,
+    textAlign: 'center',
   },
   button: {
     backgroundColor: '#007BFF',

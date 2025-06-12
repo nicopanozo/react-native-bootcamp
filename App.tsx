@@ -1,16 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import Home from './src/screens/Home';
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import CarouselComponent from './src/components/Carousel';
 
-export default function App() {
+const App = () => {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Home />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <CarouselComponent />
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
 });
+
+export default App;
