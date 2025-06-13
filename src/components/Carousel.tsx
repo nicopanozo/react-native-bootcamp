@@ -9,32 +9,35 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
+import Carousel from 'react-native-reanimated-carousel';
 import { fetchPopularMovies } from '../api/tmdb';
+import Button from './Button'; // Importar el nuevo componente
+import TextComponent from './Text'; // Importar el componente Text
 
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780';
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780'; // Use higher resolution images
 const width = Dimensions.get('window').width;
-const MAX_DOTS = 5;
 
 interface Movie {
   id: number;
   title: string;
   backdrop_path: string | null;
   poster_path: string | null;
+  vote_average: number; // Rating of the movie
 }
 
 const CarouselComponent = () => {
-  const ref = React.useRef<ICarouselInstance>(null);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const loadMovies = async () => {
       try {
         const data = await fetchPopularMovies();
-        setMovies(data);
+        // Filter top 5 movies by rating
+        const topRatedMovies = data
+          .sort((a: Movie, b: Movie) => b.vote_average - a.vote_average)
+          .slice(0, 5);
+        setMovies(topRatedMovies);
       } catch (error) {
         console.error('Error fetching movies:', error);
       } finally {
@@ -44,53 +47,6 @@ const CarouselComponent = () => {
 
     loadMovies();
   }, []);
-
-  useEffect(() => {
-    if (movies.length > 0 && !initialized) {
-      const centerIndex = Math.floor(movies.length / 2);
-      setCurrentIndex(centerIndex);
-      ref.current?.scrollTo({ index: centerIndex, animated: false });
-      setInitialized(true);
-    }
-  }, [movies, initialized]);
-
-  const renderPagination = () => {
-    if (movies.length === 0) return null;
-
-    const totalDots = movies.length;
-    const halfDots = Math.floor(MAX_DOTS / 2);
-
-    // Calcular rango dinámico de puntos visibles
-    let start = Math.max(0, currentIndex - halfDots);
-    let end = Math.min(totalDots, start + MAX_DOTS);
-
-    // Ajustar si estamos cerca del final
-    if (end - start < MAX_DOTS) {
-      start = Math.max(0, end - MAX_DOTS);
-    }
-
-    return (
-      <View style={styles.paginationContainer}>
-        {Array.from({ length: end - start }).map((_, index) => {
-          const dotIndex = start + index;
-          return (
-            <TouchableOpacity
-              key={dotIndex}
-              onPress={() => {
-                ref.current?.scrollTo({ index: dotIndex, animated: true });
-              }}
-            >
-              <View
-                style={
-                  dotIndex === currentIndex ? styles.activeDot : styles.dot
-                }
-              />
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    );
-  };
 
   if (loading) {
     return (
@@ -103,12 +59,9 @@ const CarouselComponent = () => {
   return (
     <View style={styles.container}>
       <Carousel
-        ref={ref}
         width={width * 0.9}
         height={width * 1.2}
         data={movies}
-        onSnapToItem={index => setCurrentIndex(index)}
-        defaultIndex={Math.floor(movies.length / 2)}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Image
@@ -126,22 +79,37 @@ const CarouselComponent = () => {
             />
             <View style={styles.overlay}>
               <View style={styles.textRow}>
-                <Text style={styles.listText}>My list</Text>
-                <Text style={styles.discoverText}>Discover</Text>
+                <TextComponent
+                  text="My list"
+                  color="#fff"
+                  fontSize={16}
+                  fontWeight="bold"
+                />
+                <TextComponent
+                  text="Discover"
+                  color="#fff"
+                  fontSize={16}
+                  fontWeight="bold"
+                />
               </View>
               <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.buttonWishlist}>
-                  <Text style={styles.buttonTextWishlist}>+ Wishlist</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonDetails}>
-                  <Text style={styles.buttonTextDetails}>Details</Text>
-                </TouchableOpacity>
+                <Button
+                  color="#333"
+                  textColor="#fff"
+                  text="+ Wishlist"
+                  onPress={() => console.log('Wishlist pressed')}
+                />
+                <Button
+                  color="#FFD700"
+                  textColor="#000"
+                  text="Details"
+                  onPress={() => console.log('Details pressed')}
+                />
               </View>
             </View>
           </View>
         )}
       />
-      {renderPagination()}
     </View>
   );
 };
@@ -185,10 +153,10 @@ const styles = StyleSheet.create({
   },
   textRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'center', // Center the texts horizontally
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 5,
+    gap: 10, // Add minimal spacing between "My list" and "Discover"
+    marginBottom: 5, // Reduced spacing
   },
   listText: {
     fontSize: 16,
@@ -202,51 +170,31 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-evenly', // Reduce spacing between buttons
     width: '100%',
-    marginTop: 5,
+    marginTop: 5, // Reduced spacing
   },
   buttonWishlist: {
     backgroundColor: '#333',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 8,
+    paddingVertical: 15, // Increase button size
+    paddingHorizontal: 30, // Increase button size
+    borderRadius: 8, // Slightly larger border radius
   },
   buttonTextWishlist: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 16, // Larger text
   },
   buttonDetails: {
     backgroundColor: '#FFD700',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 8,
+    paddingVertical: 15, // Increase button size
+    paddingHorizontal: 30, // Increase button size
+    borderRadius: 8, // Slightly larger border radius
   },
   buttonTextDetails: {
     color: '#000',
     fontWeight: '600',
-    fontSize: 16,
-  },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  dot: {
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    width: 10,
-    height: 10,
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    backgroundColor: '#FFD700',
-    borderRadius: 50,
-    width: 12,
-    height: 12,
-    marginHorizontal: 5,
+    fontSize: 16, // Larger text
   },
 });
 
