@@ -18,6 +18,8 @@ npm install @react-native/metro-config
 
 npx expo install react-native-linear-gradient
 
+npx expo install expo-font expo-app-loading
+
 ### Create the project
 
 ```bash

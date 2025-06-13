@@ -30,5 +30,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     tmdbApiKey: process.env.TMDB_API_KEY,
+    tmdbAccessToken: process.env.TMDB_ACCESS_TOKEN,
+    tmdbS3Url: process.env.TMDB_S3_URL,
   },
 });

@@ -1,39 +1,45 @@
-import React, { useEffect, useState } from 'react';
+// src/components/CarouselComponent.tsx
+
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
   Image,
+  StyleSheet,
+  View,
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Carousel from 'react-native-reanimated-carousel';
+import Carousel, {
+  Pagination,
+  ICarouselInstance,
+} from 'react-native-reanimated-carousel';
+import { useSharedValue } from 'react-native-reanimated';
 import { fetchPopularMovies } from '../api/tmdb';
-import Button from './Button'; // Importar el nuevo componente
-import TextComponent from './Text'; // Importar el componente Text
+import Button from './Button';
+import TextComponent from './Text';
+import { getImageUrl } from '../utils/getImageUrl';
+import { colors } from '../config/colors';
 
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780'; // Use higher resolution images
-const width = Dimensions.get('window').width;
+const { width, height } = Dimensions.get('window');
 
 interface Movie {
   id: number;
   title: string;
   backdrop_path: string | null;
   poster_path: string | null;
-  vote_average: number; // Rating of the movie
+  vote_average: number;
 }
 
 const CarouselComponent = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const ref = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
 
   useEffect(() => {
     const loadMovies = async () => {
       try {
         const data = await fetchPopularMovies();
-        // Filter top 5 movies by rating
         const topRatedMovies = data
           .sort((a: Movie, b: Movie) => b.vote_average - a.vote_average)
           .slice(0, 5);
@@ -51,7 +57,7 @@ const CarouselComponent = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007BFF" />
+        <ActivityIndicator size="large" color={colors.secondary} />
       </View>
     );
   }
@@ -59,48 +65,52 @@ const CarouselComponent = () => {
   return (
     <View style={styles.container}>
       <Carousel
-        width={width * 0.9}
-        height={width * 1.2}
+        ref={ref}
+        width={width}
+        height={height * 0.6}
         data={movies}
+        onProgressChange={progress}
+        scrollAnimationDuration={800}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Image
               source={{
-                uri: `${IMAGE_BASE_URL}${item.backdrop_path || item.poster_path}`,
+                uri: getImageUrl(
+                  item.backdrop_path || item.poster_path || '',
+                  'original',
+                ),
               }}
               style={styles.image}
               resizeMode="cover"
             />
             <LinearGradient
-              colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+              colors={['transparent', 'rgba(0, 0, 0, 0.85)']}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={styles.gradient}
             />
-            <View style={styles.overlay}>
-              <View style={styles.textRow}>
+            <View style={styles.overlayContainer}>
+              <View style={styles.titleRow}>
                 <TextComponent
-                  text="My list"
-                  color="#fff"
-                  fontSize={16}
-                  fontWeight="bold"
+                  text="My List"
+                  variant="h1"
+                  color={colors.white}
                 />
                 <TextComponent
                   text="Discover"
-                  color="#fff"
-                  fontSize={16}
-                  fontWeight="bold"
+                  variant="h1"
+                  color={colors.white}
                 />
               </View>
-              <View style={styles.buttonContainer}>
+              <View style={styles.buttonRow}>
                 <Button
-                  color="#333"
-                  textColor="#fff"
+                  color={colors.darkLight}
+                  textColor={colors.white}
                   text="+ Wishlist"
                   onPress={() => console.log('Wishlist pressed')}
                 />
                 <Button
-                  color="#FFD700"
+                  color={colors.primary}
                   textColor="#000"
                   text="Details"
                   onPress={() => console.log('Details pressed')}
@@ -110,6 +120,20 @@ const CarouselComponent = () => {
           </View>
         )}
       />
+      <Pagination.Basic
+        progress={progress}
+        data={movies}
+        dotStyle={styles.dot}
+        activeDotStyle={styles.activeDot}
+        containerStyle={styles.paginationContainer}
+        size={10}
+        onPress={index => {
+          ref.current?.scrollTo({
+            count: index - progress.value,
+            animated: true,
+          });
+        }}
+      />
     </View>
   );
 };
@@ -117,9 +141,9 @@ const CarouselComponent = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.darkMode,
     alignItems: 'center',
-    backgroundColor: '#000',
-    paddingTop: 20, // Add margin at the top
+    paddingTop: 10,
   },
   loadingContainer: {
     flex: 1,
@@ -127,12 +151,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: '100%',
+    height: '100%',
     borderRadius: 12,
     overflow: 'hidden',
-    height: '100%',
+    position: 'relative',
   },
   image: {
     width: '100%',
@@ -142,59 +165,39 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '40%',
+    height: '45%',
   },
-  overlay: {
+  overlayContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 16,
     width: '100%',
-    alignItems: 'center',
     paddingHorizontal: 20,
-  },
-  textRow: {
-    flexDirection: 'row',
-    justifyContent: 'center', // Center the texts horizontally
     alignItems: 'center',
-    gap: 10, // Add minimal spacing between "My list" and "Discover"
-    marginBottom: 5, // Reduced spacing
   },
-  listText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  discoverText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  buttonContainer: {
+  titleRow: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly', // Reduce spacing between buttons
-    width: '100%',
-    marginTop: 5, // Reduced spacing
+    justifyContent: 'center',
+    gap: 20,
+    marginBottom: 6,
   },
-  buttonWishlist: {
-    backgroundColor: '#333',
-    paddingVertical: 15, // Increase button size
-    paddingHorizontal: 30, // Increase button size
-    borderRadius: 8, // Slightly larger border radius
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
   },
-  buttonTextWishlist: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16, // Larger text
+  dot: {
+    backgroundColor: colors.white,
+    borderRadius: 50,
+    marginHorizontal: 6,
   },
-  buttonDetails: {
-    backgroundColor: '#FFD700',
-    paddingVertical: 15, // Increase button size
-    paddingHorizontal: 30, // Increase button size
-    borderRadius: 8, // Slightly larger border radius
+  activeDot: {
+    backgroundColor: colors.primary,
+    borderRadius: 50,
+    marginHorizontal: 0,
   },
-  buttonTextDetails: {
-    color: '#000',
-    fontWeight: '600',
-    fontSize: 16, // Larger text
+  paginationContainer: {
+    marginTop: 12,
+    flexDirection: 'row',
   },
 });
 
