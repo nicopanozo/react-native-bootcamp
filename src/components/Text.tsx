@@ -1,32 +1,34 @@
-import React, { FC } from 'react';
-import { Text, StyleSheet, TextStyle } from 'react-native';
+import React from 'react';
+import { Text, StyleSheet, TextStyle, TextProps } from 'react-native';
+import { theme } from '../config/theme';
 
-interface TextProps {
+type Variant = keyof typeof theme.textVariants;
+
+interface Props extends TextProps {
   text: string;
-  color: string;
-  fontSize: number;
-  fontWeight: TextStyle['fontWeight'];
-  style?: object;
+  variant?: Variant;
+  color?: string;
+  style?: TextStyle;
 }
 
-const TextComponent: FC<TextProps> = ({
+const TextComponent = ({
   text,
+  variant = 'body',
   color,
-  fontSize,
-  fontWeight,
   style,
-}) => {
+  ...rest
+}: Props) => {
+  const textStyle = {
+    ...theme.textVariants[variant],
+    color: color || theme.colors.white,
+    ...style,
+  } as TextStyle;
+
   return (
-    <Text style={[styles.text, { color, fontSize, fontWeight }, style]}>
+    <Text style={textStyle} {...rest}>
       {text}
     </Text>
   );
 };
-
-const styles = StyleSheet.create({
-  text: {
-    paddingVertical: 8,
-  },
-});
 
 export default TextComponent;

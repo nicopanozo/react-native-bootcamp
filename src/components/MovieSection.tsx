@@ -54,11 +54,15 @@ const MovieSection: React.FC<MovieSectionProps> = ({
         <TextComponent text={title} variant="h2" color={theme.colors.white} />
         {onSeeMore && (
           <Pressable onPress={onSeeMore}>
-            <TextComponent text="See more" variant="body" color={theme.colors.primary} />
+            <TextComponent
+              text="See more"
+              variant="body"
+              color={theme.colors.primary}
+            />
           </Pressable>
         )}
       </View>
-      
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -111,12 +115,20 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFirst, isLast }) => {
           style={styles.imageOverlay}
         >
           <View style={styles.ratingContainer}>
-            <TextComponent text="★" variant="body" color={theme.colors.primary} />
-            <TextComponent text={rating} variant="body" color={theme.colors.white} />
+            <TextComponent
+              text="★"
+              variant="body"
+              color={theme.colors.primary}
+            />
+            <TextComponent
+              text={rating}
+              variant="body"
+              color={theme.colors.white}
+            />
           </View>
         </LinearGradient>
       </View>
-      
+
       <View style={styles.movieInfo}>
         <TextComponent
           text={movie.title}
