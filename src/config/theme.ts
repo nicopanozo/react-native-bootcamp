@@ -13,20 +13,21 @@ export const theme = {
     sm: 10,
     base: 14,
     md: 16,
+    lg: 18,
   },
   textVariants: {
     h1: {
-      fontFamily: 'Gilroy-Bold',
-      fontSize: 16,
+      fontFamily: 'Gilroy-SemiBold',
+      fontSize: 22,
       lineHeight: 16,
     },
     h2: {
       fontFamily: 'Gilroy-SemiBold',
-      fontSize: 14,
+      fontSize: 16,
       lineHeight: 14,
     },
     body: {
-      fontFamily: 'Gilroy-Regular',
+      fontFamily: 'Gilroy-Medium',
       fontSize: 14,
       lineHeight: 14,
     },

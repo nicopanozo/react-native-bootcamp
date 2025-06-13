@@ -19,6 +19,7 @@ import Button from './Button';
 import TextComponent from './Text';
 import { getImageUrl } from '../utils/getImageUrl';
 import { colors } from '../config/colors';
+import { theme } from '../config/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -95,11 +96,13 @@ const CarouselComponent = () => {
                   text="My List"
                   variant="h1"
                   color={colors.white}
+                  style={styles.titleText}
                 />
                 <TextComponent
                   text="Discover"
                   variant="h1"
                   color={colors.white}
+                  style={styles.titleText}
                 />
               </View>
               <View style={styles.buttonRow}>
@@ -177,8 +180,12 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
-    marginBottom: 6,
+    gap: 50,
+    marginBottom: 30,
+  },
+  titleText: {
+    fontFamily: theme.fonts.medium,
+    fontSize: theme.fontSizes.lg,
   },
   buttonRow: {
     flexDirection: 'row',

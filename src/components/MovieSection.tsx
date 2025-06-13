@@ -51,12 +51,12 @@ const MovieSection: React.FC<MovieSectionProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <TextComponent text={title} variant="h2" color={theme.colors.white} />
+        <TextComponent text={title} variant="h1" color={theme.colors.white} />
         {onSeeMore && (
           <Pressable onPress={onSeeMore}>
             <TextComponent
               text="See more"
-              variant="body"
+              variant="h2"
               color={theme.colors.primary}
             />
           </Pressable>
@@ -204,8 +204,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   movieTitle: {
-    fontSize: 12,
+    fontSize: 16,
     lineHeight: 16,
+    textAlign: 'center',
   },
 });
 
