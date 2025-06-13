@@ -5,19 +5,20 @@ import {
   StyleSheet,
   GestureResponderEvent,
 } from 'react-native';
+import { theme } from '../config/theme';
 
 interface ButtonProps {
-  color: string;
+  color?: string;
   text: string;
-  textColor: string;
+  textColor?: string;
   onPress: (event: GestureResponderEvent) => void;
   style?: object;
 }
 
 const Button: FC<ButtonProps> = ({
-  color,
+  color = theme.colors.primary,
   text,
-  textColor,
+  textColor = theme.colors.white,
   onPress,
   style,
 }) => {
@@ -42,8 +43,8 @@ const styles = StyleSheet.create({
     height: 48,
   },
   text: {
-    fontWeight: '600',
-    fontSize: 16,
+    fontFamily: theme.fonts.semiBold,
+    fontSize: theme.fontSizes.lg,
   },
 });
 
