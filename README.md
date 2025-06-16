@@ -20,6 +20,8 @@ npx expo install react-native-linear-gradient
 
 npx expo install expo-font expo-app-loading
 
+npx expo install react-native-paper
+
 ### Create the project
 
 ```bash

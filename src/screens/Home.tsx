@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import CarouselComponent from '../components/Carousel';
 import MovieSection from '../components/MovieSection';
+import { Provider as PaperProvider } from 'react-native-paper';
 import {
   fetchTopRatedMovies,
   fetchMarvelMovies,
@@ -112,9 +113,11 @@ const Home = () => {
       contentContainerStyle={styles.contentContainer}
     >
       {/* Carousel at the top */}
-      <View style={styles.carouselContainer}>
-        <CarouselComponent />
-      </View>
+      <PaperProvider>
+        <View style={styles.carouselContainer}>
+          <CarouselComponent />
+        </View>
+      </PaperProvider>
 
       {/* Movie sections */}
       <View style={styles.sectionsContainer}>
