@@ -5,6 +5,7 @@ import {
   StyleSheet,
   View,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { Modal, Portal } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -61,6 +62,14 @@ const CarouselComponent = () => {
     setModalVisible(true);
   };
 
+  const handleMyListPress = () => {
+    console.log('My List pressed');
+  };
+
+  const handleDiscoverPress = () => {
+    console.log('Discover pressed');
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -100,22 +109,6 @@ const CarouselComponent = () => {
                 end={{ x: 0, y: 0.8 }}
                 style={styles.gradient}
               />
-              <View style={styles.overlayContainer}>
-                <View style={styles.titleRow}>
-                  <TextComponent
-                    text="My List"
-                    variant="h1"
-                    color={colors.white}
-                    style={styles.titleText}
-                  />
-                  <TextComponent
-                    text="Discover"
-                    variant="h1"
-                    color={colors.white}
-                    style={styles.titleText}
-                  />
-                </View>
-              </View>
             </View>
           )}
         />
@@ -133,6 +126,25 @@ const CarouselComponent = () => {
             });
           }}
         />
+        {/* Overlay estático para los textos My List y Discover */}
+        <View style={styles.staticTitles}>
+          <TouchableOpacity onPress={handleMyListPress}>
+            <TextComponent
+              text="My List"
+              variant="h1"
+              color={colors.white}
+              style={styles.titleText}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleDiscoverPress}>
+            <TextComponent
+              text="Discover"
+              variant="h1"
+              color={colors.white}
+              style={styles.titleText}
+            />
+          </TouchableOpacity>
+        </View>
         <View style={styles.staticButtons}>
           <Button
             color={colors.darkLight}
@@ -218,23 +230,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '45%',
   },
-  overlayContainer: {
-    position: 'absolute',
-    bottom: 16,
-    width: '100%',
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 50,
-    marginBottom: 50,
-  },
-  titleText: {
-    fontFamily: theme.fonts.medium,
-    fontSize: theme.fontSizes.lg,
-  },
   dot: {
     backgroundColor: colors.white,
     borderRadius: 50,
@@ -248,6 +243,19 @@ const styles = StyleSheet.create({
   paginationContainer: {
     marginTop: 12,
     flexDirection: 'row',
+  },
+  staticTitles: {
+    position: 'absolute',
+    top: 520,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  titleText: {
+    fontFamily: theme.fonts.medium,
+    fontSize: theme.fontSizes.lg,
   },
   staticButtons: {
     position: 'absolute',

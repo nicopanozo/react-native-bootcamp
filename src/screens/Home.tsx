@@ -1,5 +1,3 @@
-// src/screens/Home.tsx
-
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import CarouselComponent from '../components/Carousel';
@@ -106,60 +104,61 @@ const Home = () => {
   }, []);
 
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      bounces={false}
-      contentContainerStyle={styles.contentContainer}
-    >
-      {/* Carousel at the top */}
-      <PaperProvider>
+    <PaperProvider>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+        contentContainerStyle={styles.contentContainer}
+      >
+        {/* Carousel at the top */}
+
         <View style={styles.carouselContainer}>
           <CarouselComponent />
         </View>
-      </PaperProvider>
 
-      {/* Movie sections */}
-      <View style={styles.sectionsContainer}>
-        <MovieSection
-          title="Marvel studios"
-          movies={movieSections.marvelMovies}
-          loading={loading.marvel}
-          onSeeMore={() => console.log('See more Marvel movies')}
-        />
+        {/* Movie sections */}
+        <View style={styles.sectionsContainer}>
+          <MovieSection
+            title="Marvel studios"
+            movies={movieSections.marvelMovies}
+            loading={loading.marvel}
+            onSeeMore={() => console.log('See more Marvel movies')}
+          />
 
-        <MovieSection
-          title="Best movies"
-          movies={movieSections.bestMovies}
-          loading={loading.best}
-          onSeeMore={() => console.log('See more best movies')}
-        />
+          <MovieSection
+            title="Best movies"
+            movies={movieSections.bestMovies}
+            loading={loading.best}
+            onSeeMore={() => console.log('See more best movies')}
+          />
 
-        <MovieSection
-          title="Action movies"
-          movies={movieSections.actionMovies}
-          loading={loading.action}
-          onSeeMore={() => console.log('See more action movies')}
-        />
+          <MovieSection
+            title="Action movies"
+            movies={movieSections.actionMovies}
+            loading={loading.action}
+            onSeeMore={() => console.log('See more action movies')}
+          />
 
-        <MovieSection
-          title="Trending now"
-          movies={movieSections.trendingMovies}
-          loading={loading.trending}
-          onSeeMore={() => console.log('See more trending movies')}
-        />
+          <MovieSection
+            title="Trending now"
+            movies={movieSections.trendingMovies}
+            loading={loading.trending}
+            onSeeMore={() => console.log('See more trending movies')}
+          />
 
-        <MovieSection
-          title="Coming soon"
-          movies={movieSections.upcomingMovies}
-          loading={loading.upcoming}
-          onSeeMore={() => console.log('See more upcoming movies')}
-        />
-      </View>
+          <MovieSection
+            title="Coming soon"
+            movies={movieSections.upcomingMovies}
+            loading={loading.upcoming}
+            onSeeMore={() => console.log('See more upcoming movies')}
+          />
+        </View>
 
-      {/* Bottom spacing for safe scrolling */}
-      <View style={styles.bottomSpacing} />
-    </ScrollView>
+        {/* Bottom spacing for safe scrolling */}
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+    </PaperProvider>
   );
 };
 
@@ -180,7 +179,7 @@ const styles = StyleSheet.create({
     paddingTop: 10, // Small padding to separate from carousel
   },
   bottomSpacing: {
-    height: 60, // Extra space at bottom for comfortable scrolling
+    height: 100, // Extra space at bottom for comfortable scrolling
   },
 });
 
