@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import TextComponent from './Text';
 import { colors } from '../config/colors';
 import { theme } from '../config/theme';
@@ -20,32 +20,30 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onCategoryChange }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-        bounces={false}
-      >
-        {categories.map(category => (
-          <TouchableOpacity
-            key={category}
-            style={[
-              styles.categoryButton,
-              selectedCategory === category && styles.selectedCategoryButton,
-            ]}
-            onPress={() => handleCategoryPress(category)}
-            activeOpacity={0.7}
-          >
-            <TextComponent
-              text={category}
-              color={
-                selectedCategory === category ? colors.darkMode : colors.white
-              }
-              style={styles.categoryText}
-            />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.sliderContainer}>
+        {categories.map(category => {
+          const isSelected = selectedCategory === category;
+          return (
+            <TouchableOpacity
+              key={category}
+              style={[
+                styles.sliderItem,
+                isSelected && styles.selectedSliderItem,
+              ]}
+              onPress={() => handleCategoryPress(category)}
+              activeOpacity={0.7}
+            >
+              <TextComponent
+                text={category}
+                color={isSelected ? colors.darkMode : colors.white}
+                style={styles.sliderText}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              />
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 };
@@ -59,32 +57,38 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+    alignItems: 'center',
     zIndex: 10,
   },
-  scrollContainer: {
-    paddingHorizontal: 20,
+  sliderContainer: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.darkLight + 'CC',
+    borderRadius: 35,
+    paddingVertical: 8,
+    paddingHorizontal: 2,
+    width: '90%',
+  },
+  sliderItem: {
+    flex: 1,
+    flexBasis: 0,
+    flexShrink: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
     alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    minWidth: 0,
   },
-  categoryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 25,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    marginRight: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  selectedCategoryButton: {
+  selectedSliderItem: {
     backgroundColor: colors.white,
-    borderColor: colors.white,
+    borderRadius: 50,
   },
-  categoryText: {
+  sliderText: {
     fontFamily: theme.fonts.semiBold,
     fontSize: theme.fontSizes.md,
+    flexShrink: 1,
+    minWidth: 0,
     textAlign: 'center',
-  },
-  selectedCategoryText: {
-    fontFamily: theme.fonts.semiBold,
   },
 });
 

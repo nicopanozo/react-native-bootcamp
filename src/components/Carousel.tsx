@@ -270,9 +270,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 25,
     width: '100%',
-    paddingHorizontal: 16,
+    paddingHorizontal: 100,
   },
   titleText: {
     fontFamily: theme.fonts.medium,
