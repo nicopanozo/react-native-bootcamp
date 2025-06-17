@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     marginBottom: 12,
+    paddingVertical: 15,
   },
   scrollView: {
     paddingLeft: 20,
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
   },
   movieTitle: {
     fontSize: 16,
-    lineHeight: 16,
+    lineHeight: 20,
     textAlign: 'center',
   },
 });

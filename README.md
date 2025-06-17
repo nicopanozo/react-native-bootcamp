@@ -22,6 +22,14 @@ npx expo install expo-font expo-app-loading
 
 npx expo install react-native-paper
 
+npm install @react-navigation/native
+npx expo install react-native-screens
+npm install @react-navigation/bottom-tabs
+npm install @react-navigation/native-stack
+npm install @react-navigation/stack
+
+npm install --save @react-native-vector-icons/fontawesome6
+
 ### Create the project
 
 ```bash

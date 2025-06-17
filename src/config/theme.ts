@@ -19,12 +19,12 @@ export const theme = {
     h1: {
       fontFamily: 'Gilroy-SemiBold',
       fontSize: 22,
-      lineHeight: 16,
+      lineHeight: 24,
     },
     h2: {
       fontFamily: 'Gilroy-SemiBold',
       fontSize: 16,
-      lineHeight: 14,
+      lineHeight: 16,
     },
     body: {
       fontFamily: 'Gilroy-Medium',
