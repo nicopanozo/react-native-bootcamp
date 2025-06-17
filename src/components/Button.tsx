@@ -37,10 +37,11 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 6,
+    borderRadius: 12,
     alignItems: 'center',
-    width: 155,
-    height: 48,
+    justifyContent: 'center',
+    width: 170,
+    height: 55,
   },
   text: {
     fontFamily: theme.fonts.semiBold,

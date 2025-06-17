@@ -98,7 +98,7 @@ const CarouselComponent = () => {
               <Image
                 source={{
                   uri: getImageUrl(
-                    item.backdrop_path || item.poster_path || '',
+                    item.poster_path || item.backdrop_path || '',
                     'original',
                   ),
                 }}
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   staticButtons: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 40,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
