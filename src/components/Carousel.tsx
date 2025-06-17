@@ -126,25 +126,6 @@ const CarouselComponent = () => {
             });
           }}
         />
-        {/* Overlay estático para los textos My List y Discover */}
-        <View style={styles.staticTitles}>
-          <TouchableOpacity onPress={handleMyListPress}>
-            <TextComponent
-              text="My List"
-              variant="h1"
-              color={colors.white}
-              style={styles.titleText}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleDiscoverPress}>
-            <TextComponent
-              text="Discover"
-              variant="h1"
-              color={colors.white}
-              style={styles.titleText}
-            />
-          </TouchableOpacity>
-        </View>
         <View style={styles.staticButtons}>
           <Button
             color={colors.darkLight}
