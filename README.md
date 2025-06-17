@@ -22,6 +22,9 @@ npx expo install expo-font expo-app-loading
 
 npx expo install react-native-paper
 
+npm install @react-navigation/native
+npx expo install react-native-screens
+
 ### Create the project
 
 ```bash

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@react-native/metro-config": "^0.79.3",
+    "@react-navigation/native": "^7.1.11",
     "axios": "^1.9.0",
     "expo": "~53.0.11",
     "expo-app-loading": "^2.1.1",
@@ -25,7 +26,8 @@
     "react-native-paper": "^5.14.5",
     "react-native-reanimated": "~3.17.4",
     "react-native-reanimated-carousel": "^4.0.2",
-    "react-native-safe-area-context": "5.4.0"
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "~4.11.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
