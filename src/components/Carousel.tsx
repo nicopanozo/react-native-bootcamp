@@ -111,6 +111,12 @@ const CarouselComponent = () => {
                 end={{ x: 0, y: 0.8 }}
                 style={styles.gradient}
               />
+              <LinearGradient
+                colors={['rgba(0, 0, 0, 0.95)', 'transparent']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.gradientTop}
+              />
             </View>
           )}
         />
@@ -128,19 +134,39 @@ const CarouselComponent = () => {
             });
           }}
         />
-        <View style={styles.staticButtons}>
-          <Button
-            color={colors.darkLight}
-            textColor={colors.white}
-            text="+ Wishlist"
-            onPress={() => console.log('Wishlist pressed')}
-          />
-          <Button
-            color={colors.primary}
-            textColor="#000"
-            text="Details"
-            onPress={handleDetailsPress}
-          />
+        <View style={styles.overlayContainer}>
+          <View style={styles.staticTitles}>
+            <TouchableOpacity onPress={handleMyListPress}>
+              <TextComponent
+                text="My List"
+                variant="h1"
+                color={colors.white}
+                style={styles.titleText}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDiscoverPress}>
+              <TextComponent
+                text="Discover"
+                variant="h1"
+                color={colors.white}
+                style={styles.titleText}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.staticButtons}>
+            <Button
+              color={colors.darkLight}
+              textColor={colors.white}
+              text="+ Wishlist"
+              onPress={() => console.log('Wishlist pressed')}
+            />
+            <Button
+              color={colors.primary}
+              textColor="#000"
+              text="Details"
+              onPress={handleDetailsPress}
+            />
+          </View>
         </View>
       </View>
 
@@ -213,6 +239,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '45%',
   },
+  gradientTop: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    height: '45%',
+  },
   dot: {
     backgroundColor: colors.white,
     borderRadius: 50,
@@ -227,23 +259,26 @@ const styles = StyleSheet.create({
     marginTop: 12,
     flexDirection: 'row',
   },
-  staticTitles: {
+  overlayContainer: {
     position: 'absolute',
-    top: 520,
+    bottom: 40,
     left: 0,
     right: 0,
+    alignItems: 'center',
+  },
+  staticTitles: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
+    marginBottom: 10,
+    width: '100%',
+    paddingHorizontal: 16,
   },
   titleText: {
     fontFamily: theme.fonts.medium,
     fontSize: theme.fontSizes.lg,
   },
   staticButtons: {
-    position: 'absolute',
-    bottom: 40,
-    width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 20,
