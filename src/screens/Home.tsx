@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, StatusBar } from 'react-native';
 import CarouselComponent from '../components/Carousel';
 import MovieSection from '../components/MovieSection';
+import TopNavigation from '../components/TopNavigation';
 import { Provider as PaperProvider } from 'react-native-paper';
 import {
   fetchTopRatedMovies,
@@ -11,6 +12,7 @@ import {
   fetchUpcomingMovies,
 } from '../api/tmdb';
 import { theme } from '../config/theme';
+import { colors } from '../config/colors';
 
 interface Movie {
   id: number;
@@ -44,6 +46,7 @@ const Home = () => {
     trending: true,
     upcoming: true,
   });
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
     const loadMovieSections = async () => {
@@ -103,66 +106,82 @@ const Home = () => {
     loadMovieSections();
   }, []);
 
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    console.log('Selected category:', category);
+  };
+
   return (
     <PaperProvider>
-      <ScrollView
-        style={styles.container}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-        contentContainerStyle={styles.contentContainer}
-      >
-        {/* Carousel at the top */}
+      <View style={styles.mainContainer}>
+        {/* Status Bar */}
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={colors.darkMode}
+          translucent={false}
+        />
 
-        <View style={styles.carouselContainer}>
-          <CarouselComponent />
-        </View>
+        <TopNavigation onCategoryChange={handleCategoryChange} />
 
-        {/* Movie sections */}
-        <View style={styles.sectionsContainer}>
-          <MovieSection
-            title="Marvel studios"
-            movies={movieSections.marvelMovies}
-            loading={loading.marvel}
-            onSeeMore={() => console.log('See more Marvel movies')}
-          />
+        <ScrollView
+          style={styles.container}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <View style={styles.carouselContainer}>
+            <CarouselComponent />
+          </View>
 
-          <MovieSection
-            title="Best movies"
-            movies={movieSections.bestMovies}
-            loading={loading.best}
-            onSeeMore={() => console.log('See more best movies')}
-          />
+          <View style={styles.sectionsContainer}>
+            <MovieSection
+              title="Marvel studios"
+              movies={movieSections.marvelMovies}
+              loading={loading.marvel}
+              onSeeMore={() => console.log('See more Marvel movies')}
+            />
 
-          <MovieSection
-            title="Action movies"
-            movies={movieSections.actionMovies}
-            loading={loading.action}
-            onSeeMore={() => console.log('See more action movies')}
-          />
+            <MovieSection
+              title="Best movies"
+              movies={movieSections.bestMovies}
+              loading={loading.best}
+              onSeeMore={() => console.log('See more best movies')}
+            />
 
-          <MovieSection
-            title="Trending now"
-            movies={movieSections.trendingMovies}
-            loading={loading.trending}
-            onSeeMore={() => console.log('See more trending movies')}
-          />
+            <MovieSection
+              title="Action movies"
+              movies={movieSections.actionMovies}
+              loading={loading.action}
+              onSeeMore={() => console.log('See more action movies')}
+            />
 
-          <MovieSection
-            title="Coming soon"
-            movies={movieSections.upcomingMovies}
-            loading={loading.upcoming}
-            onSeeMore={() => console.log('See more upcoming movies')}
-          />
-        </View>
+            <MovieSection
+              title="Trending now"
+              movies={movieSections.trendingMovies}
+              loading={loading.trending}
+              onSeeMore={() => console.log('See more trending movies')}
+            />
 
-        {/* Bottom spacing for safe scrolling */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
+            <MovieSection
+              title="Coming soon"
+              movies={movieSections.upcomingMovies}
+              loading={loading.upcoming}
+              onSeeMore={() => console.log('See more upcoming movies')}
+            />
+          </View>
+
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
+      </View>
     </PaperProvider>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: colors.darkMode,
+  },
   container: {
     flex: 1,
     backgroundColor: theme.colors.darkMode,
@@ -171,15 +190,15 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   carouselContainer: {
-    // Removed fixed height to let carousel determine its own height
-    marginBottom: 0, // No margin to prevent gap
+    marginBottom: 0,
+    marginTop: -50,
   },
   sectionsContainer: {
     flex: 1,
-    paddingTop: 10, // Small padding to separate from carousel
+    paddingTop: 10,
   },
   bottomSpacing: {
-    height: 100, // Extra space at bottom for comfortable scrolling
+    height: 0,
   },
 });
 

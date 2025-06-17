@@ -24,6 +24,9 @@ npx expo install react-native-paper
 
 npm install @react-navigation/native
 npx expo install react-native-screens
+npm install @react-navigation/bottom-tabs
+npm install @react-navigation/native-stack
+npm install @react-navigation/stack
 
 ### Create the project
 
