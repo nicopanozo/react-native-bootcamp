@@ -79,8 +79,8 @@ const styles = StyleSheet.create({
     borderColor: colors.white,
   },
   categoryText: {
-    fontFamily: theme.fonts.medium,
-    fontSize: theme.fontSizes.sm,
+    fontFamily: theme.fonts.semiBold,
+    fontSize: theme.fontSizes.md,
     textAlign: 'center',
   },
   selectedCategoryText: {

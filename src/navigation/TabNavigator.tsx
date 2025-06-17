@@ -1,8 +1,7 @@
-// src/navigation/TabNavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
 import Home from '../screens/Home';
 import TextComponent from '../components/Text';
 import { colors } from '../config/colors';
@@ -36,16 +35,18 @@ const TabNavigator = () => {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: colors.darkMode,
-          borderTopWidth: 1,
-          borderTopColor: colors.darkLight,
+          borderTopWidth: 0,
           paddingTop: 10,
-          paddingBottom: 5,
-          height: 80,
+          paddingBottom: 10,
+          height: 88,
+        },
+        tabBarItemStyle: {
+          marginHorizontal: 30,
         },
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.darkLight,
+        tabBarInactiveTintColor: colors.white,
         tabBarLabelStyle: {
-          fontFamily: theme.fonts.regular,
+          fontFamily: theme.fonts.semiBold,
           fontSize: theme.fontSizes.sm,
           marginTop: 4,
         },
@@ -56,18 +57,11 @@ const TabNavigator = () => {
         component={Home}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View
-              style={[
-                styles.iconContainer,
-                focused && styles.selectedIconContainer,
-              ]}
-            >
-              <Ionicons
-                name="home"
-                size={20}
-                color={focused ? colors.darkMode : colors.white}
-              />
-            </View>
+            <FontAwesome6
+              name="house"
+              size={28}
+              color={focused ? colors.primary : colors.white}
+            />
           ),
         }}
       />
@@ -76,18 +70,11 @@ const TabNavigator = () => {
         component={SearchScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View
-              style={[
-                styles.iconContainer,
-                focused && styles.selectedIconContainer,
-              ]}
-            >
-              <Ionicons
-                name="search"
-                size={20}
-                color={focused ? colors.darkMode : colors.white}
-              />
-            </View>
+            <FontAwesome6
+              name="magnifying-glass"
+              size={28}
+              color={focused ? colors.primary : colors.white}
+            />
           ),
         }}
       />
@@ -96,18 +83,11 @@ const TabNavigator = () => {
         component={WishlistScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View
-              style={[
-                styles.iconContainer,
-                focused && styles.selectedIconContainer,
-              ]}
-            >
-              <Ionicons
-                name="bookmark"
-                size={20}
-                color={focused ? colors.darkMode : colors.white}
-              />
-            </View>
+            <FontAwesome6
+              name="bookmark"
+              size={28}
+              color={focused ? colors.primary : colors.white}
+            />
           ),
         }}
       />
@@ -116,18 +96,11 @@ const TabNavigator = () => {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View
-              style={[
-                styles.iconContainer,
-                focused && styles.selectedIconContainer,
-              ]}
-            >
-              <Ionicons
-                name="person"
-                size={20}
-                color={focused ? colors.darkMode : colors.white}
-              />
-            </View>
+            <FontAwesome6
+              name="user"
+              size={28}
+              color={focused ? colors.primary : colors.white}
+            />
           ),
         }}
       />
@@ -141,16 +114,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkMode,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  selectedIconContainer: {
-    backgroundColor: colors.primary,
   },
 });
 

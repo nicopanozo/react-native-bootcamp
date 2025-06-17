@@ -28,6 +28,8 @@ npm install @react-navigation/bottom-tabs
 npm install @react-navigation/native-stack
 npm install @react-navigation/stack
 
+npm install --save @react-native-vector-icons/fontawesome6
+
 ### Create the project
 
 ```bash

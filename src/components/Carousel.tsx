@@ -88,6 +88,8 @@ const CarouselComponent = () => {
           width={width}
           height={height * 0.6}
           data={movies}
+          autoPlay
+          autoPlayInterval={2000}
           onProgressChange={progress}
           scrollAnimationDuration={800}
           onSnapToItem={index => setActiveIndex(index)}

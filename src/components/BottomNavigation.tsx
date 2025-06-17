@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { FontAwesome6 } from '@expo/vector-icons';
 import TextComponent from './Text';
 import { colors } from '../config/colors';
 import { theme } from '../config/theme';
@@ -11,14 +12,14 @@ interface BottomNavigationProps {
 interface TabItem {
   id: string;
   title: string;
-  icon: string;
+  iconName: string;
 }
 
 const tabs: TabItem[] = [
-  { id: 'home', title: 'Home', icon: '🏠' },
-  { id: 'search', title: 'Search', icon: '🔍' },
-  { id: 'wishlist', title: 'Wishlist', icon: '📋' },
-  { id: 'profile', title: 'Profile', icon: '👤' },
+  { id: 'home', title: 'Home', iconName: 'house' },
+  { id: 'search', title: 'Search', iconName: 'search' },
+  { id: 'wishlist', title: 'Wishlist', iconName: 'bookmark' },
+  { id: 'profile', title: 'Profile', iconName: 'user' },
 ];
 
 const BottomNavigation: React.FC<BottomNavigationProps> = ({ onTabChange }) => {
@@ -46,7 +47,13 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ onTabChange }) => {
                   selectedTab === tab.id && styles.selectedIconContainer,
                 ]}
               >
-                <TextComponent text={tab.icon} style={styles.icon} />
+                <FontAwesome6
+                  name={tab.iconName as any}
+                  size={18}
+                  color={
+                    selectedTab === tab.id ? colors.darkMode : colors.white
+                  }
+                />
               </View>
               <TextComponent
                 text={tab.title}
@@ -97,9 +104,6 @@ const styles = StyleSheet.create({
   },
   selectedIconContainer: {
     backgroundColor: colors.primary,
-  },
-  icon: {
-    fontSize: 18,
   },
   tabText: {
     fontFamily: theme.fonts.regular,
