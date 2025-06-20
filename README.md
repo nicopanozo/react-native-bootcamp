@@ -1,10 +1,30 @@
-# React Native Bootcamp (TypeScript)
+<p align="center">
+  <img src="assets/assuresoft-logo.png" alt="AssureSoft Logo" width="200"/>
+</p>
 
-This is a modern React Native Movies App built using [Expo](https://expo.dev/) and TypeScript.
-Powered by the TMDb API, it delivers up-to-date movie content, including trending, top-rated, upcoming, and now playing films.
-Explore movies by genre, discover Marvel and action hits, and enjoy rich details like ratings, descriptions, and categories—all in a beautifully designed interface inspired by [Figma design](https://www.figma.com/community/file/1126286295256197533/movies-mobile-app-home-light-dark).
+# Digital Academy Bootcamp: Mobile Development
 
-It is an open source mobile app, focused on learning and applying modern React Native concepts and best practices.
+## React Native Movies App (TypeScript)
+
+This is a modern React Native Movies App built with [Expo](https://expo.dev/) and TypeScript, designed to showcase best practices in mobile development. Powered by the [TMDb API](https://developer.themoviedb.org/reference/intro/getting-started), the app delivers up-to-date movie content, including trending, top-rated, upcoming, and now playing films.
+
+Explore movies by genre, discover Marvel and action hits, and enjoy detailed information such as ratings, descriptions, and categories—all presented in a beautifully crafted interface inspired by this [Figma design](https://www.figma.com/community/file/1126286295256197533/movies-mobile-app-home-light-dark).
+
+This open source project focuses on learning and applying modern React Native concepts, including custom hooks, advanced navigation, theming, animations, and type safety with TypeScript.
+
+Developed as part of the **Digital Academy Bootcamp** at **AssureSoft**.
+
+---
+
+## 📑 Table of Contents
+
+- [Key Concepts & Features](#-key-concepts--features)
+- [Design](#-design)
+- [Getting Started](#-getting-started)
+- [Useful Expo Commands & Troubleshooting](#-useful-expo-commands--troubleshooting)
+- [Screenshots](#-screenshots)
+- [Credits & Acknowledgements](#-credits--acknowledgements)
+- [License](#-license)
 
 ---
 
@@ -49,41 +69,18 @@ cd react-native-bootcamp
 ### 2. Install dependencies
 
 ```bash
-npm install axios
-npm install dotenv
-npx expo install expo-constants
-npx expo install react-native-safe-area-context
-npm install --save-dev prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser
-npx expo install react-native-reanimated react-native-gesture-handler
-npm install react-native-reanimated-carousel
-npm install @react-native/metro-config
-npx expo install react-native-linear-gradient
-npx expo install expo-font expo-app-loading
-npx expo install react-native-paper
-npm install @react-navigation/native
-npx expo install react-native-screens
-npm install @react-navigation/bottom-tabs
-npm install @react-navigation/native-stack
-npm install @react-navigation/stack
-npm install --save @react-native-vector-icons/fontawesome6
+npm install
+npx expo install
 ```
 
-> **Tip:** To install additional packages, use:
+> For additional packages, use:
 >
 > ```bash
 > npx expo install <package-name>
 > npm install <package-name>
 > ```
 
-### 3. Create the project (if starting from scratch)
-
-```bash
-npx create-expo-app my-app --template
-# Choose: blank (TypeScript)
-cd my-app
-```
-
-### 4. Start the development server
+### 3. Start the development server
 
 ```bash
 npx expo start
@@ -91,7 +88,7 @@ npx expo start
 
 Scan the QR code with the Expo Go app on your mobile device, or open it on an emulator.
 
-### 5. Testing on Android Emulator
+### 4. Testing on Android Emulator
 
 - Install Android Studio
 - Create a virtual device (AVD)
@@ -102,11 +99,51 @@ Scan the QR code with the Expo Go app on your mobile device, or open it on an em
 npx expo start --android
 ```
 
-<p float="left">
-  <img src="assets/screen1.png" width="350" />
-  <img src="assets/screen2.png" width="350" />
-  <img src="assets/screen3.png" width="350" />
-</p>
+---
+
+## 🛠️ Useful Expo Commands & Troubleshooting
+
+- **Clear Expo cache (recommended for fixing weird issues):**
+  ```bash
+  npx expo start -c
+  ```
+- **Reset Metro bundler cache:**
+  ```bash
+  npx react-native start --reset-cache
+  ```
+- **Clean node_modules and reinstall:**
+  ```bash
+  rm -rf node_modules
+  npm install
+  ```
+- **Check for outdated dependencies:**
+  ```bash
+  npx expo install --check
+  ```
+- **Upgrade Expo SDK:**
+  ```bash
+  npx expo upgrade
+  ```
+- **Open project on web:**
+  ```bash
+  npx expo start --web
+  ```
+- **Open project on iOS simulator (macOS only):**
+  ```bash
+  npx expo start --ios
+  ```
+- **Show all available Expo commands:**
+  ```bash
+  npx expo --help
+  ```
+
+---
+
+## 📸 Screenshots
+
+|                          Home Screen                          |                          Movie Details                          |                          Genres                          |
+| :-----------------------------------------------------------: | :-------------------------------------------------------------: | :------------------------------------------------------: |
+| <img src="assets/screen1.png" alt="Home Screen" width="250"/> | <img src="assets/screen2.png" alt="Movie Details" width="250"/> | <img src="assets/screen3.png" alt="Genres" width="250"/> |
 
 ---
 
@@ -115,6 +152,7 @@ npx expo start --android
 - Built with [React Native](https://reactnative.dev/) and [Expo](https://expo.dev/)
 - Movie data powered by [The Movie Database (TMDb) API](https://developer.themoviedb.org/reference/intro/getting-started)
 - UI inspired by [Figma Movies Mobile App Design](https://www.figma.com/community/file/1126286295256197533/movies-mobile-app-home-light-dark)
+- Developed as part of the [Digital Academy](https://assuresoft.com/) Bootcamp at AssureSoft
 
 ---
 
