@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
   Dimensions,
   Image,
@@ -6,6 +12,7 @@ import {
   View,
   ActivityIndicator,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import { Modal, Portal } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,6 +21,7 @@ import Carousel, {
   ICarouselInstance,
 } from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
+
 import { fetchPopularMovies } from '../api/tmdb';
 import Button from './Button';
 import TextComponent from './Text';
@@ -22,6 +30,10 @@ import { colors } from '../config/colors';
 import { theme } from '../config/theme';
 
 const { width, height } = Dimensions.get('window');
+const CAROUSEL_HEIGHT = height * 0.6;
+const VISIBLE_SLIDES = 5;
+const AUTO_PLAY_INTERVAL = 2000;
+const SCROLL_DURATION = 800;
 
 interface Movie {
   id: number;
@@ -32,43 +44,74 @@ interface Movie {
   vote_average: number;
 }
 
-const CarouselComponent = () => {
+const CarouselComponent: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const ref = useRef<ICarouselInstance>(null);
-  const progress = useSharedValue<number>(0);
 
-  useEffect(() => {
-    const loadMovies = async () => {
-      try {
-        const data = await fetchPopularMovies();
-        const topRatedMovies = data
-          .sort((a: Movie, b: Movie) => b.vote_average - a.vote_average)
-          .slice(0, 5);
-        setMovies(topRatedMovies);
-      } catch (error) {
-        console.error('Error fetching movies:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const carouselRef = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue(0);
 
-    loadMovies();
+  const loadMovies = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchPopularMovies();
+      const topRated = data
+        .sort((a: Movie, b: Movie) => b.vote_average - a.vote_average)
+        .slice(0, VISIBLE_SLIDES);
+      setMovies(topRated);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError('No se pudieron cargar las películas.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleDetailsPress = () => {
-    setModalVisible(true);
-  };
+  useEffect(() => {
+    loadMovies();
+  }, [loadMovies]);
 
-  const handleMyListPress = () => {
-    console.log('My List pressed');
-  };
+  const handleOpenModal = useCallback(() => setModalVisible(true), []);
+  const handleCloseModal = useCallback(() => setModalVisible(false), []);
+  const handleWishlist = useCallback(() => console.log('Wishlist pressed'), []);
+  const handleMyList = useCallback(() => console.log('My List pressed'), []);
+  const handleDiscover = useCallback(() => console.log('Discover pressed'), []);
 
-  const handleDiscoverPress = () => {
-    console.log('Discover pressed');
-  };
+  const renderItem = useCallback(
+    ({ item }: { item: Movie }) => (
+      <View style={styles.card} key={item.id}>
+        <Image
+          source={{
+            uri: getImageUrl(
+              item.poster_path ?? item.backdrop_path ?? '',
+              'original',
+            ),
+          }}
+          style={styles.image}
+          resizeMode="cover"
+          accessibilityLabel={item.title}
+        />
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.95)']}
+          style={styles.bottomGradient}
+        />
+        <LinearGradient
+          colors={['rgba(0,0,0,0.95)', 'transparent']}
+          style={styles.topGradient}
+        />
+      </View>
+    ),
+    [],
+  );
+
+  const currentMovie = useMemo(
+    () => movies[activeIndex],
+    [movies, activeIndex],
+  );
 
   if (loading) {
     return (
@@ -78,93 +121,80 @@ const CarouselComponent = () => {
     );
   }
 
-  const currentMovie = movies[activeIndex];
+  if (error) {
+    return (
+      <View style={styles.loadingContainer}>
+        <TextComponent text={error} color={colors.white} />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.carouselWrapper}>
         <Carousel
-          ref={ref}
+          ref={carouselRef}
           width={width}
-          height={height * 0.6}
+          height={CAROUSEL_HEIGHT}
           data={movies}
           autoPlay
-          autoPlayInterval={2000}
+          autoPlayInterval={AUTO_PLAY_INTERVAL}
           onProgressChange={progress}
-          scrollAnimationDuration={800}
+          scrollAnimationDuration={SCROLL_DURATION}
           onSnapToItem={index => setActiveIndex(index)}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Image
-                source={{
-                  uri: getImageUrl(
-                    item.poster_path || item.backdrop_path || '',
-                    'original',
-                  ),
-                }}
-                style={styles.image}
-                resizeMode="cover"
-              />
-              <LinearGradient
-                colors={['transparent', 'rgba(0, 0, 0, 0.95)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 0.8 }}
-                style={styles.gradient}
-              />
-              <LinearGradient
-                colors={['rgba(0, 0, 0, 0.95)', 'transparent']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={styles.gradientTop}
-              />
-            </View>
-          )}
+          renderItem={renderItem}
         />
+
         <Pagination.Basic
           progress={progress}
           data={movies}
+          size={10}
           dotStyle={styles.dot}
           activeDotStyle={styles.activeDot}
           containerStyle={styles.paginationContainer}
-          size={10}
-          onPress={index => {
-            ref.current?.scrollTo({
-              count: index - progress.value,
+          onPress={i =>
+            carouselRef.current?.scrollTo({
+              count: i - progress.value,
               animated: true,
-            });
-          }}
+            })
+          }
         />
+
         <View style={styles.overlayContainer}>
-          <View style={styles.staticTitles}>
-            <TouchableOpacity onPress={handleMyListPress}>
+          <View style={styles.tabContainer}>
+            <TouchableOpacity onPress={handleMyList} accessibilityRole="button">
               <TextComponent
                 text="My List"
                 variant="h1"
                 color={colors.white}
-                style={styles.titleText}
+                style={styles.tabText}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleDiscoverPress}>
+            <TouchableOpacity
+              onPress={handleDiscover}
+              accessibilityRole="button"
+            >
               <TextComponent
                 text="Discover"
                 variant="h1"
                 color={colors.white}
-                style={styles.titleText}
+                style={styles.tabText}
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.staticButtons}>
+
+          <View style={styles.buttonContainer}>
             <Button
+              text="+ Wishlist"
+              onPress={handleWishlist}
               color={colors.darkLight}
               textColor={colors.white}
-              text="+ Wishlist"
-              onPress={() => console.log('Wishlist pressed')}
             />
             <Button
+              text="Details"
+              onPress={handleOpenModal}
               color={colors.primary}
               textColor="#000"
-              text="Details"
-              onPress={handleDetailsPress}
             />
           </View>
         </View>
@@ -173,7 +203,7 @@ const CarouselComponent = () => {
       <Portal>
         <Modal
           visible={modalVisible}
-          onDismiss={() => setModalVisible(false)}
+          onDismiss={handleCloseModal}
           contentContainerStyle={styles.modalContainer}
         >
           <View style={styles.modalContent}>
@@ -185,25 +215,25 @@ const CarouselComponent = () => {
             />
             <TextComponent
               text={currentMovie.overview}
-              color={colors.white}
               style={styles.modalText}
+              color={colors.white}
             />
             <TextComponent
               text={`Rating: ${currentMovie.vote_average}`}
-              color={colors.white}
               style={styles.modalText}
+              color={colors.white}
             />
             <Button
               text="Cerrar"
+              onPress={handleCloseModal}
               color={colors.primary}
               textColor="#000"
-              onPress={() => setModalVisible(false)}
               style={styles.closeButton}
             />
           </View>
         </Modal>
       </Portal>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -211,39 +241,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.darkMode,
-    alignItems: 'center',
-    paddingTop: 10,
-  },
-  carouselWrapper: {
-    position: 'relative',
   },
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  carouselWrapper: {
+    position: 'relative',
+  },
   card: {
     width: '100%',
     height: '100%',
     borderRadius: 12,
     overflow: 'hidden',
-    position: 'relative',
   },
   image: {
     width: '100%',
     height: '100%',
   },
-  gradient: {
+  bottomGradient: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
     height: '45%',
   },
-  gradientTop: {
+  topGradient: {
     position: 'absolute',
     top: 0,
     width: '100%',
     height: '45%',
+  },
+  paginationContainer: {
+    marginTop: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   dot: {
     backgroundColor: colors.white,
@@ -255,10 +287,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginHorizontal: 0,
   },
-  paginationContainer: {
-    marginTop: 12,
-    flexDirection: 'row',
-  },
   overlayContainer: {
     position: 'absolute',
     bottom: 40,
@@ -266,22 +294,21 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
   },
-  staticTitles: {
+  tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    alignItems: 'center',
-    marginBottom: 25,
     width: '100%',
-    paddingHorizontal: 100,
+    paddingHorizontal: 40,
+    marginBottom: 20,
   },
-  titleText: {
+  tabText: {
     fontFamily: theme.fonts.medium,
     fontSize: theme.fontSizes.lg,
   },
-  staticButtons: {
+  buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
+    gap: 16,
   },
   modalContainer: {
     justifyContent: 'center',
@@ -298,20 +325,19 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontFamily: theme.fonts.bold,
     fontSize: theme.fontSizes.lg,
-    marginBottom: 20,
+    marginBottom: 16,
     textAlign: 'center',
   },
   modalText: {
     fontFamily: theme.fonts.regular,
     fontSize: theme.fontSizes.md,
-    color: colors.white,
-    marginBottom: 10,
+    marginBottom: 12,
     textAlign: 'center',
   },
   closeButton: {
-    marginTop: 15,
+    marginTop: 16,
     alignSelf: 'center',
   },
 });
 
-export default CarouselComponent;
+export default React.memo(CarouselComponent);
