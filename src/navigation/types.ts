@@ -1,6 +1,10 @@
 export type RootStackParamList = {
-  Main: undefined;
+  Main: { screen?: keyof MainTabParamList; params?: object };
   MovieDetails: { movieId: number };
+  SeeMore: {
+    category: string;
+    redirectTo?: keyof MainTabParamList;
+  };
 };
 
 export type MainTabParamList = {

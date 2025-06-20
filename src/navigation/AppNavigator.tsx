@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabNavigator from './TabNavigator';
 import { RootStackParamList } from './types';
+import SeeMoreScreen from '../screens/SeeMoreScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -15,6 +16,7 @@ const AppNavigator = () => {
         }}
       >
         <Stack.Screen name="Main" component={TabNavigator} />
+        <Stack.Screen name="SeeMore" component={SeeMoreScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

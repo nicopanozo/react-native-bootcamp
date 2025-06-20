@@ -3,30 +3,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Home from '../screens/Home';
-import TextComponent from '../components/Text';
+import SearchScreen from '../screens/SearchScreen';
+import WishlistScreen from '../screens/WishlistScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import { colors } from '../config/colors';
 import { theme } from '../config/theme';
 import { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
-
-const SearchScreen = () => (
-  <View style={styles.screenContainer}>
-    <TextComponent text="Search Screen" color={colors.white} />
-  </View>
-);
-
-const WishlistScreen = () => (
-  <View style={styles.screenContainer}>
-    <TextComponent text="Wishlist Screen" color={colors.white} />
-  </View>
-);
-
-const ProfileScreen = () => (
-  <View style={styles.screenContainer}>
-    <TextComponent text="Profile Screen" color={colors.white} />
-  </View>
-);
 
 const TabNavigator = () => {
   return (
