@@ -26,6 +26,10 @@ const AppNavigator = () => {
             headerStyle: { backgroundColor: theme.colors.darkLight },
             headerTintColor: theme.colors.white,
             headerBackTitleVisible: false,
+            headerTitleStyle: {
+              fontFamily: theme.fonts.bold,
+              fontSize: theme.fontSizes.lg,
+            },
           })}
         />
       </Stack.Navigator>
