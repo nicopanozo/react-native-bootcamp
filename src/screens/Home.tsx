@@ -4,6 +4,7 @@ import CarouselComponent from '../components/Carousel';
 import MovieSection from '../components/MovieSection';
 import TopNavigation from '../components/TopNavigation';
 import { Provider as PaperProvider } from 'react-native-paper';
+import Ad from '../components/Ad';
 import {
   fetchTopRatedMovies,
   fetchMarvelMovies,
@@ -170,6 +171,11 @@ const Home = () => {
             />
           </View>
 
+          <Ad
+            imageSource={require('../../assets/black-friday.png')}
+            title="Black friday is here!"
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Viverra sociis pulvinar auctor nibh nibh iaculis id."
+          />
           <View style={styles.bottomSpacing} />
         </ScrollView>
       </View>
