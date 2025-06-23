@@ -177,7 +177,7 @@ const SeeMoreScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.dark} />
+      <StatusBar barStyle="light-content" backgroundColor={theme.colors.darkLight} />
 
       <FlatList
         data={movies}
@@ -196,19 +196,19 @@ const SeeMoreScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.dark,
+    backgroundColor: theme.colors.darkLight,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.dark,
+    backgroundColor: theme.colors.darkLight,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.dark,
+    backgroundColor: theme.colors.darkLight,
     padding: 20,
   },
   retryButton: {
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 20,
-    backgroundColor: theme.colors.dark,
+    backgroundColor: theme.colors.darkLight,
   },
   backButton: {
     padding: 8,
