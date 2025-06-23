@@ -7,11 +7,11 @@ import {
   Dimensions,
   ActivityIndicator,
   StatusBar,
+  SafeAreaView,
   Pressable,
 } from 'react-native';
-import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../config/theme';
 import TextComponent from '../components/Text';
@@ -26,9 +26,6 @@ import {
 } from '../api/tmdb';
 
 type SeeMoreScreenRouteProp = RouteProp<RootStackParamList, 'SeeMore'>;
-type StackNavProp = StackNavigationProp<RootStackParamList, 'SeeMore'>;
-
-const validTabs = ['Home', 'Search', 'Wishlist', 'Profile'] as const;
 
 interface Movie {
   id: number;
@@ -45,7 +42,6 @@ const movieWidth = (width - 48) / numColumns;
 
 const SeeMoreScreen = () => {
   const route = useRoute<SeeMoreScreenRouteProp>();
-  const navigation = useNavigation<StackNavProp>();
   const { category } = route.params;
 
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -90,7 +86,7 @@ const SeeMoreScreen = () => {
     fetchMovies();
   }, [category]);
 
-  const renderMovieItem = ({ item, index }: { item: Movie; index: number }) => {
+  const renderMovieItem = ({ item }: { item: Movie; index: number }) => {
     const imageUrl = getImageUrl(item.poster_path || item.backdrop_path || '');
     const rating = item.vote_average.toFixed(1);
 
@@ -139,46 +135,44 @@ const SeeMoreScreen = () => {
     );
   };
 
-  const renderHeader = () => (
-    <View style={styles.headerContainer}>
-      <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-        <TextComponent text="←" variant="h1" color={theme.colors.white} />
-      </Pressable>
-      <TextComponent text={category} variant="h1" color={theme.colors.white} />
-      <View style={styles.placeholder} />
-    </View>
-  );
-
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.secondary} />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={theme.colors.darkLight}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.secondary} />
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <TextComponent text={error} variant="body" color={theme.colors.white} />
-        <Pressable
-          style={styles.retryButton}
-          onPress={() => navigation.goBack()}
-        >
+      <SafeAreaView style={styles.container}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={theme.colors.darkLight}
+        />
+        <View style={styles.errorContainer}>
           <TextComponent
-            text="Go Back"
+            text={error}
             variant="body"
             color={theme.colors.white}
           />
-        </Pressable>
-      </View>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.darkLight} />
-
+    <SafeAreaView style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={theme.colors.darkLight}
+      />
       <FlatList
         data={movies}
         renderItem={renderMovieItem}
@@ -186,10 +180,9 @@ const SeeMoreScreen = () => {
         numColumns={numColumns}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        ListHeaderComponent={renderHeader}
         columnWrapperStyle={styles.row}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -210,27 +203,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.colors.darkLight,
     padding: 20,
-  },
-  retryButton: {
-    marginTop: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 8,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    backgroundColor: theme.colors.darkLight,
-  },
-  backButton: {
-    padding: 8,
-  },
-  placeholder: {
-    width: 40,
   },
   listContent: {
     paddingBottom: 20,
