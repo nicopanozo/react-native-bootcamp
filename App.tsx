@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useFonts } from 'expo-font';
 import { ActivityIndicator, View } from 'react-native';
+import { WishlistProvider } from './src/context/WishlistContext';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -28,9 +29,11 @@ export default function App() {
   }
 
   return (
-    <>
-      <StatusBar style="light" backgroundColor="transparent" translucent />
-      <AppNavigator />
-    </>
+    <WishlistProvider>
+      <>
+        <StatusBar style="light" backgroundColor="transparent" translucent />
+        <AppNavigator />
+      </>
+    </WishlistProvider>
   );
 }

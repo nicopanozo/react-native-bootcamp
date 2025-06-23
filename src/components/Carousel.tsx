@@ -28,6 +28,10 @@ import TextComponent from './Text';
 import { getImageUrl } from '../utils/getImageUrl';
 import { colors } from '../config/colors';
 import { theme } from '../config/theme';
+import { useWishlist } from '../context/WishlistContext';
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { MainTabParamList } from '../navigation/types';
 
 const { width, height } = Dimensions.get('window');
 const CAROUSEL_HEIGHT = height * 0.6;
@@ -54,6 +58,9 @@ const CarouselComponent: React.FC = () => {
   const carouselRef = useRef<ICarouselInstance>(null);
   const progress = useSharedValue(0);
 
+  const { addToWishlist } = useWishlist();
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+
   const loadMovies = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -77,9 +84,25 @@ const CarouselComponent: React.FC = () => {
 
   const handleOpenModal = useCallback(() => setModalVisible(true), []);
   const handleCloseModal = useCallback(() => setModalVisible(false), []);
-  const handleWishlist = useCallback(() => console.log('Wishlist pressed'), []);
-  const handleMyList = useCallback(() => console.log('My List pressed'), []);
-  const handleDiscover = useCallback(() => console.log('Discover pressed'), []);
+
+  const currentMovie = useMemo(
+    () => movies[activeIndex],
+    [movies, activeIndex],
+  );
+
+  const handleWishlist = useCallback(() => {
+    if (currentMovie) {
+      addToWishlist(currentMovie);
+    }
+  }, [currentMovie, addToWishlist, navigation]);
+
+  const handleMyList = useCallback(() => {
+    navigation.navigate('Wishlist');
+  }, []);
+
+  const handleDiscover = useCallback(() => {
+    navigation.navigate('Search');
+  }, []);
 
   const renderItem = useCallback(
     ({ item }: { item: Movie }) => (
@@ -106,11 +129,6 @@ const CarouselComponent: React.FC = () => {
       </View>
     ),
     [],
-  );
-
-  const currentMovie = useMemo(
-    () => movies[activeIndex],
-    [movies, activeIndex],
   );
 
   if (loading) {
