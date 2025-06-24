@@ -10,7 +10,6 @@ import {
   fetchMoviesByGenre,
 } from '../api/tmdb';
 
-// You can replace "any" with your explicit movie type if available.
 type Movie = any;
 type FetchFunction = () => Promise<Movie[]>;
 

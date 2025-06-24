@@ -26,6 +26,7 @@ import {
 } from '../api/tmdb';
 
 type SeeMoreScreenRouteProp = RouteProp<RootStackParamList, 'SeeMore'>;
+type ListItem = Movie | { id: string; empty: true };
 
 interface Movie {
   id: number;
@@ -86,7 +87,23 @@ const SeeMoreScreen = () => {
     fetchMovies();
   }, [category]);
 
-  const renderMovieItem = ({ item }: { item: Movie; index: number }) => {
+  const totalItems = movies.length;
+  const numEmptyItems =
+    totalItems % numColumns === 0 ? 0 : numColumns - (totalItems % numColumns);
+
+  const extendedMovies: ListItem[] = [
+    ...movies,
+    ...Array.from({ length: numEmptyItems }, (_, index) => ({
+      id: `empty-${index}`,
+      empty: true as true,
+    })),
+  ];
+
+  const renderMovieItem = ({ item }: { item: ListItem }) => {
+    if ('empty' in item) {
+      return <View style={styles.placeholder} />;
+    }
+
     const imageUrl = getImageUrl(item.poster_path || item.backdrop_path || '');
     const rating = item.vote_average.toFixed(1);
 
@@ -174,7 +191,7 @@ const SeeMoreScreen = () => {
         backgroundColor={theme.colors.darkLight}
       />
       <FlatList
-        data={movies}
+        data={extendedMovies}
         renderItem={renderMovieItem}
         keyExtractor={item => item.id.toString()}
         numColumns={numColumns}
@@ -250,6 +267,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 18,
     textAlign: 'center',
+  },
+  placeholder: {
+    width: movieWidth,
+    height: movieWidth * 1.5,
+    opacity: 0,
+    marginBottom: 8,
   },
 });
 
