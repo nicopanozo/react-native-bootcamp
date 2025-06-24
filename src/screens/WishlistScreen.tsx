@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  Image,
-} from 'react-native';
+import { View, StyleSheet, FlatList, Image } from 'react-native';
 import TextComponent from '../components/Text';
 import { colors } from '../config/colors';
 import { useWishlist } from '../context/WishlistContext';
 import { getImageUrl } from '../utils/getImageUrl';
-import Button from '../components/Button';
+import Button from '../components/CustomButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const WishlistScreen = () => {
