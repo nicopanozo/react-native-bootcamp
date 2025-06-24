@@ -23,7 +23,8 @@ import Carousel, {
 import { useSharedValue } from 'react-native-reanimated';
 
 import { fetchPopularMovies } from '../api/tmdb';
-import Button from './Button';
+import CustomButton from './CustomButton';
+import CustomSnackbar from './CustomSnackbar';
 import TextComponent from './Text';
 import { getImageUrl } from '../utils/getImageUrl';
 import { colors } from '../config/colors';
@@ -54,11 +55,19 @@ const CarouselComponent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarText, setSnackbarText] = useState('');
+  const [snackbarIcon, setSnackbarIcon] = useState<string | undefined>(
+    undefined,
+  );
+  const [snackbarIconColor, setSnackbarIconColor] = useState<
+    string | undefined
+  >(undefined);
 
   const carouselRef = useRef<ICarouselInstance>(null);
   const progress = useSharedValue(0);
 
-  const { addToWishlist } = useWishlist();
+  const { addToWishlist, wishlist } = useWishlist();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
 
   const loadMovies = useCallback(async () => {
@@ -92,9 +101,20 @@ const CarouselComponent: React.FC = () => {
 
   const handleWishlist = useCallback(() => {
     if (currentMovie) {
-      addToWishlist(currentMovie);
+      const alreadyInWishlist = wishlist.some(m => m.id === currentMovie.id);
+      if (alreadyInWishlist) {
+        setSnackbarText(`"${currentMovie.title}" is already in your Wishlist`);
+        setSnackbarIcon('circle-info');
+        setSnackbarIconColor('#f1c40f');
+      } else {
+        addToWishlist(currentMovie);
+        setSnackbarText(`"${currentMovie.title}" added to your Wishlist`);
+        setSnackbarIcon('circle-check');
+        setSnackbarIconColor('#2ecc71');
+      }
+      setSnackbarVisible(true);
     }
-  }, [currentMovie, addToWishlist, navigation]);
+  }, [currentMovie, addToWishlist, wishlist]);
 
   const handleMyList = useCallback(() => {
     navigation.navigate('Wishlist');
@@ -202,13 +222,13 @@ const CarouselComponent: React.FC = () => {
           </View>
 
           <View style={styles.buttonContainer}>
-            <Button
+            <CustomButton
               text="+ Wishlist"
               onPress={handleWishlist}
               color={colors.darkLight}
               textColor={colors.white}
             />
-            <Button
+            <CustomButton
               text="Details"
               onPress={handleOpenModal}
               color={colors.primary}
@@ -241,7 +261,7 @@ const CarouselComponent: React.FC = () => {
               style={styles.modalText}
               color={colors.white}
             />
-            <Button
+            <CustomButton
               text="Cerrar"
               onPress={handleCloseModal}
               color={colors.primary}
@@ -251,6 +271,14 @@ const CarouselComponent: React.FC = () => {
           </View>
         </Modal>
       </Portal>
+      <CustomSnackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        message={snackbarText}
+        iconName={snackbarIcon}
+        iconColor={snackbarIconColor}
+        bottomOffset={130}
+      />
     </SafeAreaView>
   );
 };
