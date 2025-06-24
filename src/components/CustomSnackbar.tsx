@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Dimensions, View} from 'react-native';
+import { Dimensions, View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Animated, {
@@ -81,26 +81,32 @@ const CustomSnackbar: React.FC<CustomSnackbarProps> = ({
           alignSelf: 'center',
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-    {iconName && (
-      <FontAwesome6
-        name={iconName}
-        size={18}
-        color={iconColor}
-        style={{ marginRight: 8 }}
-      />
-    )}
-    <TextComponent
-      text={message}
-      color={colors.white}
-      style={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 15,
-        lineHeight: 18,
-      }}
-    />
-  </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {iconName && (
+            <FontAwesome6
+              name={iconName}
+              size={18}
+              color={iconColor}
+              style={{ marginRight: 8 }}
+            />
+          )}
+          <TextComponent
+            text={message}
+            color={colors.white}
+            style={{
+              textAlign: 'center',
+              fontWeight: 'bold',
+              fontSize: 15,
+              lineHeight: 18,
+            }}
+          />
+        </View>
       </Snackbar>
     </Animated.View>
   );
