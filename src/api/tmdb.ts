@@ -84,3 +84,13 @@ export const fetchMoviesByGenre = async (genreId: number) => {
   });
   return data.results;
 };
+
+export const fetchMovieDetails = async (movieId: number) => {
+  try {
+    const { data } = await tmdb.get(`/movie/${movieId}`);
+    return data;
+  } catch (error) {
+    console.error('Error fetching movie details:', error);
+    throw new Error('Failed to fetch movie details');
+  }
+};

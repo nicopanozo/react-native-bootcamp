@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import { Modal, Portal } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, {
   Pagination,
@@ -22,10 +21,11 @@ import Carousel, {
 } from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 
-import { fetchPopularMovies } from '../api/tmdb';
+import { fetchPopularMovies, fetchMovieDetails } from '../api/tmdb';
 import CustomButton from './CustomButton';
 import CustomSnackbar from './CustomSnackbar';
 import TextComponent from './Text';
+import CustomModal from './CustomModal';
 import { getImageUrl } from '../utils/getImageUrl';
 import { colors } from '../config/colors';
 import { theme } from '../config/theme';
@@ -47,6 +47,8 @@ interface Movie {
   backdrop_path: string | null;
   poster_path: string | null;
   vote_average: number;
+  release_date?: string;
+  original_language?: string;
 }
 
 const CarouselComponent: React.FC = () => {
@@ -91,13 +93,26 @@ const CarouselComponent: React.FC = () => {
     loadMovies();
   }, [loadMovies]);
 
-  const handleOpenModal = useCallback(() => setModalVisible(true), []);
-  const handleCloseModal = useCallback(() => setModalVisible(false), []);
+  const [selectedMovieDetails, setSelectedMovieDetails] = useState<any | null>(
+    null,
+  );
 
   const currentMovie = useMemo(
     () => movies[activeIndex],
     [movies, activeIndex],
   );
+
+  const handleOpenModal = useCallback(async () => {
+    if (!currentMovie) return;
+    try {
+      const details = await fetchMovieDetails(currentMovie.id);
+      setSelectedMovieDetails(details);
+      setModalVisible(true);
+    } catch (error) {
+      console.error('Failed to fetch movie details:', error);
+    }
+  }, [currentMovie]);
+  const handleCloseModal = useCallback(() => setModalVisible(false), []);
 
   const handleWishlist = useCallback(() => {
     if (currentMovie) {
@@ -238,39 +253,19 @@ const CarouselComponent: React.FC = () => {
         </View>
       </View>
 
-      <Portal>
-        <Modal
-          visible={modalVisible}
-          onDismiss={handleCloseModal}
-          contentContainerStyle={styles.modalContainer}
-        >
-          <View style={styles.modalContent}>
-            <TextComponent
-              text={currentMovie.title}
-              variant="h1"
-              color={colors.primary}
-              style={styles.modalTitle}
-            />
-            <TextComponent
-              text={currentMovie.overview}
-              style={styles.modalText}
-              color={colors.white}
-            />
-            <TextComponent
-              text={`Rating: ${currentMovie.vote_average}`}
-              style={styles.modalText}
-              color={colors.white}
-            />
-            <CustomButton
-              text="Cerrar"
-              onPress={handleCloseModal}
-              color={colors.primary}
-              textColor="#000"
-              style={styles.closeButton}
-            />
-          </View>
-        </Modal>
-      </Portal>
+      <CustomModal
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        title={currentMovie?.title || ''}
+        overview={currentMovie?.overview || ''}
+        rating={currentMovie?.vote_average || 0}
+        releaseDate={currentMovie?.release_date}
+        language={currentMovie?.original_language}
+        posterPath={currentMovie?.poster_path ?? undefined}
+        runtime={selectedMovieDetails?.runtime ?? 0}
+        genres={selectedMovieDetails?.genres?.map((g: any) => g.name) ?? []}
+      />
+
       <CustomSnackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
@@ -355,34 +350,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 16,
-  },
-  modalContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  modalContent: {
-    backgroundColor: colors.darkMode,
-    borderRadius: 12,
-    padding: 20,
-    width: '90%',
-    maxWidth: 350,
-  },
-  modalTitle: {
-    fontFamily: theme.fonts.bold,
-    fontSize: theme.fontSizes.lg,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  modalText: {
-    fontFamily: theme.fonts.regular,
-    fontSize: theme.fontSizes.md,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  closeButton: {
-    marginTop: 16,
-    alignSelf: 'center',
   },
 });
 
