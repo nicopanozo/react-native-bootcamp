@@ -97,6 +97,9 @@ const CarouselComponent: React.FC = () => {
     null,
   );
 
+  const [selectedMovieForModal, setSelectedMovieForModal] =
+    useState<Movie | null>(null);
+
   const currentMovie = useMemo(
     () => movies[activeIndex],
     [movies, activeIndex],
@@ -105,6 +108,7 @@ const CarouselComponent: React.FC = () => {
   const handleOpenModal = useCallback(async () => {
     if (!currentMovie) return;
     try {
+      setSelectedMovieForModal(currentMovie);
       const details = await fetchMovieDetails(currentMovie.id);
       setSelectedMovieDetails(details);
       setModalVisible(true);
@@ -112,6 +116,7 @@ const CarouselComponent: React.FC = () => {
       console.error('Failed to fetch movie details:', error);
     }
   }, [currentMovie]);
+
   const handleCloseModal = useCallback(() => setModalVisible(false), []);
 
   const handleWishlist = useCallback(() => {
@@ -256,12 +261,12 @@ const CarouselComponent: React.FC = () => {
       <CustomModal
         visible={modalVisible}
         onClose={handleCloseModal}
-        title={currentMovie?.title || ''}
-        overview={currentMovie?.overview || ''}
-        rating={currentMovie?.vote_average || 0}
-        releaseDate={currentMovie?.release_date}
-        language={currentMovie?.original_language}
-        posterPath={currentMovie?.poster_path ?? undefined}
+        title={selectedMovieForModal?.title || ''}
+        overview={selectedMovieForModal?.overview || ''}
+        rating={selectedMovieForModal?.vote_average || 0}
+        releaseDate={selectedMovieForModal?.release_date}
+        language={selectedMovieForModal?.original_language}
+        posterPath={selectedMovieForModal?.poster_path ?? undefined}
         runtime={selectedMovieDetails?.runtime ?? 0}
         genres={selectedMovieDetails?.genres?.map((g: any) => g.name) ?? []}
       />
