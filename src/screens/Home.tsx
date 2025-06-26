@@ -5,6 +5,7 @@ import MovieSection from '../components/MovieSection';
 import TopNavigation from '../components/TopNavigation';
 import { Provider as PaperProvider } from 'react-native-paper';
 import Ad from '../components/Ad';
+import { Movie } from '../types';
 import {
   fetchTopRatedMovies,
   fetchMarvelMovies,
@@ -14,15 +15,6 @@ import {
 } from '../api/tmdb';
 import { theme } from '../config/theme';
 import { colors } from '../config/colors';
-
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  vote_average: number;
-  release_date: string;
-}
 
 interface MovieSections {
   marvelMovies: Movie[];

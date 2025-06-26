@@ -18,7 +18,7 @@ interface ButtonProps {
 const Button: FC<ButtonProps> = ({
   color = theme.colors.primary,
   text,
-  textColor = theme.colors.white,
+  textColor = theme.colors.darkMode,
   onPress,
   style,
 }) => {
