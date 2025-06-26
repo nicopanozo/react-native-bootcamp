@@ -33,13 +33,23 @@ import { useWishlist } from '../context/WishlistContext';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../navigation/types';
-import { Movie } from '../types';
 
 const { width, height } = Dimensions.get('window');
 const CAROUSEL_HEIGHT = height * 0.6;
 const VISIBLE_SLIDES = 5;
 const AUTO_PLAY_INTERVAL = 2000;
 const SCROLL_DURATION = 800;
+
+interface Movie {
+  id: number;
+  title: string;
+  overview: string;
+  backdrop_path: string | null;
+  poster_path: string | null;
+  vote_average: number;
+  release_date?: string;
+  original_language?: string;
+}
 
 const CarouselComponent: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);

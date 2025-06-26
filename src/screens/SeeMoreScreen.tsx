@@ -3,16 +3,19 @@ import {
   View,
   StyleSheet,
   FlatList,
+  Image,
   Dimensions,
   ActivityIndicator,
   StatusBar,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../config/theme';
 import TextComponent from '../components/Text';
-import MovieCard from '../components/MovieCard';
+import { getImageUrl } from '../utils/getImageUrl';
 import {
   fetchTopRatedMovies,
   fetchMarvelMovies,
@@ -21,10 +24,18 @@ import {
   fetchUpcomingMovies,
   fetchPopularMovies,
 } from '../api/tmdb';
-import { Movie } from '../types';
 
 type SeeMoreScreenRouteProp = RouteProp<RootStackParamList, 'SeeMore'>;
 type ListItem = Movie | { id: string; empty: true };
+
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  vote_average: number;
+  release_date: string;
+}
 
 const { width } = Dimensions.get('window');
 const numColumns = 3;
@@ -93,10 +104,51 @@ const SeeMoreScreen = () => {
       return <View style={styles.placeholder} />;
     }
 
+    const imageUrl = getImageUrl(item.poster_path || item.backdrop_path || '');
+    const rating = item.vote_average.toFixed(1);
+
     return (
-      <View style={{ width: movieWidth }}>
-        <MovieCard movie={item} isFirst={false} isLast={false} />
-      </View>
+      <Pressable
+        style={styles.movieCard}
+        onPress={() => console.log('Movie pressed:', item.title)}
+      >
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: imageUrl }}
+            style={styles.movieImage}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+            start={{ x: 0, y: 0.6 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.imageOverlay}
+          >
+            <View style={styles.ratingContainer}>
+              <TextComponent
+                text="★"
+                variant="body"
+                color={theme.colors.primary}
+              />
+              <TextComponent
+                text={rating}
+                variant="body"
+                color={theme.colors.white}
+              />
+            </View>
+          </LinearGradient>
+        </View>
+
+        <View style={styles.movieInfo}>
+          <TextComponent
+            text={item.title}
+            variant="body"
+            color={theme.colors.white}
+            numberOfLines={2}
+            style={styles.movieTitle}
+          />
+        </View>
+      </Pressable>
     );
   };
 
@@ -177,9 +229,48 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
   },
+  movieCard: {
+    width: movieWidth,
+    marginBottom: 8,
+  },
+  imageContainer: {
+    position: 'relative',
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: theme.colors.darkLight,
+  },
+  movieImage: {
+    width: '100%',
+    height: movieWidth * 1.5,
+    borderRadius: 8,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 40,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 8,
+    paddingBottom: 6,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  movieInfo: {
+    marginTop: 8,
+    paddingHorizontal: 4,
+  },
+  movieTitle: {
+    fontSize: 14,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
   placeholder: {
     width: movieWidth,
-    height: movieWidth * 1.5 + 40,
+    height: movieWidth * 1.5,
     opacity: 0,
     marginBottom: 8,
   },
