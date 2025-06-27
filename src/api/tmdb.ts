@@ -24,13 +24,11 @@ tmdb.interceptors.request.use(config => {
   return config;
 });
 
-// Existing function
 export const fetchPopularMovies = async () => {
   const { data } = await tmdb.get('/movie/popular');
   return data.results;
 };
 
-// New API functions
 export const fetchTopRatedMovies = async () => {
   const { data } = await tmdb.get('/movie/top_rated');
   return data.results;
@@ -53,7 +51,6 @@ export const fetchTrendingMovies = async (
   return data.results;
 };
 
-// Marvel Studios movies (example using discover endpoint)
 export const fetchMarvelMovies = async () => {
   const { data } = await tmdb.get('/discover/movie', {
     params: {
@@ -64,21 +61,10 @@ export const fetchMarvelMovies = async () => {
   return data.results;
 };
 
-// Action movies (example using genres)
 export const fetchActionMovies = async () => {
   const { data } = await tmdb.get('/discover/movie', {
     params: {
       with_genres: '28', // Action genre ID
-      sort_by: 'popularity.desc',
-    },
-  });
-  return data.results;
-};
-
-export const fetchMoviesByGenre = async (genreId: number) => {
-  const { data } = await tmdb.get('/discover/movie', {
-    params: {
-      with_genres: genreId.toString(),
       sort_by: 'popularity.desc',
     },
   });
@@ -93,4 +79,27 @@ export const fetchMovieDetails = async (movieId: number) => {
     console.error('Error fetching movie details:', error);
     throw new Error('Failed to fetch movie details');
   }
+};
+
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+export const fetchMovieGenres = async (): Promise<Genre[]> => {
+  try {
+    const { data } = await tmdb.get('/genre/movie/list');
+    return data.genres;
+  } catch (error) {
+    console.error('Error fetching genres:', error);
+    throw new Error('Failed to fetch genres');
+  }
+};
+
+export const fetchMoviesByGenre = async (genreId: number | null) => {
+  const params = genreId
+    ? { with_genres: genreId.toString(), sort_by: 'popularity.desc' }
+    : { sort_by: 'popularity.desc' };
+  const { data } = await tmdb.get('/discover/movie', { params });
+  return data.results;
 };

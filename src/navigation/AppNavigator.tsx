@@ -22,7 +22,7 @@ const AppNavigator = () => {
           component={SeeMoreScreen}
           options={({ route }) => ({
             headerShown: true,
-            title: route.params?.category ?? 'See More',
+            title: route.params.title,
             headerStyle: { backgroundColor: theme.colors.darkLight },
             headerTintColor: theme.colors.white,
             headerBackTitleVisible: false,

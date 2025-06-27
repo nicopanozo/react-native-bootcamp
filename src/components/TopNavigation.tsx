@@ -3,17 +3,16 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import TextComponent from './Text';
 import { colors } from '../config/colors';
 import { theme } from '../config/theme';
+import { CATEGORIES, Category } from '../constants/categories';
 
 interface TopNavigationProps {
-  onCategoryChange?: (category: string) => void;
+  onCategoryChange?: (category: Category) => void;
 }
 
-const categories = ['All', 'Romance', 'Sport', 'Kids', 'Horror'];
-
 const TopNavigation: React.FC<TopNavigationProps> = ({ onCategoryChange }) => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
-  const handleCategoryPress = (category: string) => {
+  const handleCategoryPress = (category: Category) => {
     setSelectedCategory(category);
     onCategoryChange?.(category);
   };
@@ -21,7 +20,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onCategoryChange }) => {
   return (
     <View style={styles.container}>
       <View style={styles.sliderContainer}>
-        {categories.map(category => {
+        {CATEGORIES.map(category => {
           const isSelected = selectedCategory === category;
           return (
             <TouchableOpacity

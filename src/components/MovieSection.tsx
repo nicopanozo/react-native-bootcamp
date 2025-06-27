@@ -6,16 +6,10 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import TextComponent from './Text';
 import MovieCard from './MovieCard';
 import { theme } from '../config/theme';
-import { RootStackParamList } from '../navigation/types';
 import { Movie } from '../types';
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
 interface MovieSectionProps {
   title: string;
@@ -30,8 +24,6 @@ const MovieSection: React.FC<MovieSectionProps> = ({
   onSeeMore,
   loading = false,
 }) => {
-  const navigation = useNavigation<NavigationProp>();
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -48,14 +40,7 @@ const MovieSection: React.FC<MovieSectionProps> = ({
       <View style={styles.headerContainer}>
         <TextComponent text={title} variant="h1" color={theme.colors.white} />
         {onSeeMore && (
-          <Pressable
-            onPress={() =>
-              navigation.navigate('SeeMore', {
-                category: title,
-                redirectTo: 'Search',
-              })
-            }
-          >
+          <Pressable onPress={onSeeMore}>
             <TextComponent
               text="See more"
               variant="h2"

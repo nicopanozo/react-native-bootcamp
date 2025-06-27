@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, StatusBar } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import CarouselComponent from '../components/Carousel';
 import MovieSection from '../components/MovieSection';
 import TopNavigation from '../components/TopNavigation';
@@ -12,9 +14,18 @@ import {
   fetchActionMovies,
   fetchTrendingMovies,
   fetchUpcomingMovies,
+  fetchMoviesByGenre,
 } from '../api/tmdb';
 import { theme } from '../config/theme';
 import { colors } from '../config/colors';
+import { RootStackParamList } from '../navigation/types';
+import {
+  CATEGORIES,
+  CATEGORY_GENRE_MAP,
+  Category,
+} from '../constants/categories';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
 interface MovieSections {
   marvelMovies: Movie[];
@@ -25,6 +36,8 @@ interface MovieSections {
 }
 
 const Home = () => {
+  const navigation = useNavigation<NavigationProp>();
+
   const [movieSections, setMovieSections] = useState<MovieSections>({
     marvelMovies: [],
     bestMovies: [],
@@ -32,61 +45,38 @@ const Home = () => {
     trendingMovies: [],
     upcomingMovies: [],
   });
-  const [loading, setLoading] = useState({
+  const [loadingSections, setLoadingSections] = useState({
     marvel: true,
     best: true,
     action: true,
     trending: true,
     upcoming: true,
   });
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  const [categoryMovies, setCategoryMovies] = useState<Movie[]>([]);
+  const [loadingCategory, setLoadingCategory] = useState(false);
 
   useEffect(() => {
-    const loadMovieSections = async () => {
+    (async () => {
       try {
-        // Load Marvel movies
-        const marvelData = await fetchMarvelMovies();
-        setMovieSections(prev => ({
-          ...prev,
-          marvelMovies: marvelData.slice(0, 10),
-        }));
-        setLoading(prev => ({ ...prev, marvel: false }));
-
-        // Load best movies (top rated)
-        const bestData = await fetchTopRatedMovies();
-        setMovieSections(prev => ({
-          ...prev,
-          bestMovies: bestData.slice(0, 10),
-        }));
-        setLoading(prev => ({ ...prev, best: false }));
-
-        // Load action movies
-        const actionData = await fetchActionMovies();
-        setMovieSections(prev => ({
-          ...prev,
-          actionMovies: actionData.slice(0, 10),
-        }));
-        setLoading(prev => ({ ...prev, action: false }));
-
-        // Load trending movies
-        const trendingData = await fetchTrendingMovies();
-        setMovieSections(prev => ({
-          ...prev,
-          trendingMovies: trendingData.slice(0, 10),
-        }));
-        setLoading(prev => ({ ...prev, trending: false }));
-
-        // Load upcoming movies
-        const upcomingData = await fetchUpcomingMovies();
-        setMovieSections(prev => ({
-          ...prev,
-          upcomingMovies: upcomingData.slice(0, 10),
-        }));
-        setLoading(prev => ({ ...prev, upcoming: false }));
-      } catch (error) {
-        console.error('Error fetching movie sections:', error);
-        // Reset all loading states on error
-        setLoading({
+        const [mv, best, action, trending, upcoming] = await Promise.all([
+          fetchMarvelMovies(),
+          fetchTopRatedMovies(),
+          fetchActionMovies(),
+          fetchTrendingMovies(),
+          fetchUpcomingMovies(),
+        ]);
+        setMovieSections({
+          marvelMovies: mv.slice(0, 10),
+          bestMovies: best.slice(0, 10),
+          actionMovies: action.slice(0, 10),
+          trendingMovies: trending.slice(0, 10),
+          upcomingMovies: upcoming.slice(0, 10),
+        });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingSections({
           marvel: false,
           best: false,
           action: false,
@@ -94,20 +84,34 @@ const Home = () => {
           upcoming: false,
         });
       }
-    };
-
-    loadMovieSections();
+    })();
   }, []);
 
-  const handleCategoryChange = (category: string) => {
+  useEffect(() => {
+    const genreId = CATEGORY_GENRE_MAP[selectedCategory];
+    if (genreId === null) return;
+
+    setLoadingCategory(true);
+    (async () => {
+      try {
+        const data = await fetchMoviesByGenre(genreId);
+        setCategoryMovies(data.slice(0, 20));
+      } catch (e) {
+        console.error(e);
+        setCategoryMovies([]);
+      } finally {
+        setLoadingCategory(false);
+      }
+    })();
+  }, [selectedCategory]);
+
+  const handleCategoryChange = (category: Category) => {
     setSelectedCategory(category);
-    console.log('Selected category:', category);
   };
 
   return (
     <PaperProvider>
       <View style={styles.mainContainer}>
-        {/* Status Bar */}
         <StatusBar
           barStyle="light-content"
           backgroundColor={colors.darkMode}
@@ -127,40 +131,77 @@ const Home = () => {
           </View>
 
           <View style={styles.sectionsContainer}>
-            <MovieSection
-              title="Marvel studios"
-              movies={movieSections.marvelMovies}
-              loading={loading.marvel}
-              onSeeMore={() => console.log('See more Marvel movies')}
-            />
-
-            <MovieSection
-              title="Best movies"
-              movies={movieSections.bestMovies}
-              loading={loading.best}
-              onSeeMore={() => console.log('See more best movies')}
-            />
-
-            <MovieSection
-              title="Action movies"
-              movies={movieSections.actionMovies}
-              loading={loading.action}
-              onSeeMore={() => console.log('See more action movies')}
-            />
-
-            <MovieSection
-              title="Trending now"
-              movies={movieSections.trendingMovies}
-              loading={loading.trending}
-              onSeeMore={() => console.log('See more trending movies')}
-            />
-
-            <MovieSection
-              title="Coming soon"
-              movies={movieSections.upcomingMovies}
-              loading={loading.upcoming}
-              onSeeMore={() => console.log('See more upcoming movies')}
-            />
+            {selectedCategory === 'All' ? (
+              <>
+                <MovieSection
+                  title="Marvel studios"
+                  movies={movieSections.marvelMovies}
+                  loading={loadingSections.marvel}
+                  onSeeMore={() =>
+                    navigation.navigate('SeeMore', {
+                      title: 'Marvel studios',
+                      endpoint: 'marvel',
+                    })
+                  }
+                />
+                <MovieSection
+                  title="Best movies"
+                  movies={movieSections.bestMovies}
+                  loading={loadingSections.best}
+                  onSeeMore={() =>
+                    navigation.navigate('SeeMore', {
+                      title: 'Best movies',
+                      endpoint: 'topRated',
+                    })
+                  }
+                />
+                <MovieSection
+                  title="Action movies"
+                  movies={movieSections.actionMovies}
+                  loading={loadingSections.action}
+                  onSeeMore={() =>
+                    navigation.navigate('SeeMore', {
+                      title: 'Action movies',
+                      endpoint: 'action',
+                    })
+                  }
+                />
+                <MovieSection
+                  title="Trending now"
+                  movies={movieSections.trendingMovies}
+                  loading={loadingSections.trending}
+                  onSeeMore={() =>
+                    navigation.navigate('SeeMore', {
+                      title: 'Trending now',
+                      endpoint: 'trending',
+                    })
+                  }
+                />
+                <MovieSection
+                  title="Coming soon"
+                  movies={movieSections.upcomingMovies}
+                  loading={loadingSections.upcoming}
+                  onSeeMore={() =>
+                    navigation.navigate('SeeMore', {
+                      title: 'Coming soon',
+                      endpoint: 'upcoming',
+                    })
+                  }
+                />
+              </>
+            ) : (
+              <MovieSection
+                title={selectedCategory}
+                movies={categoryMovies}
+                loading={loadingCategory}
+                onSeeMore={() =>
+                  navigation.navigate('SeeMore', {
+                    title: selectedCategory,
+                    genreId: CATEGORY_GENRE_MAP[selectedCategory],
+                  })
+                }
+              />
+            )}
           </View>
 
           <Ad
