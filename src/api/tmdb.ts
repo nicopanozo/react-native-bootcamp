@@ -103,3 +103,13 @@ export const fetchMoviesByGenre = async (genreId: number | null) => {
   const { data } = await tmdb.get('/discover/movie', { params });
   return data.results;
 };
+
+export const searchMovies = async (query: string) => {
+  if (!query) return [];
+  const { data } = await tmdb.get('/search/movie', {
+    params: {
+      query,
+    },
+  });
+  return data.results;
+};

@@ -1,129 +1,102 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
-  FlatList,
   TextInput,
   ActivityIndicator,
+  FlatList,
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
 import TextComponent from '../components/Text';
 import { colors } from '../config/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  fetchPopularMovies,
-  fetchTopRatedMovies,
-  fetchUpcomingMovies,
-  fetchNowPlayingMovies,
-  fetchTrendingMovies,
-} from '../api/tmdb';
+import { searchMovies } from '../api/tmdb';
 import { Movie } from '../types';
 import MovieCard from '../components/MovieCard';
+import ScreenHeader from '../components/ScreenHeader';
 
 const SearchScreen = () => {
-  const [allMovies, setAllMovies] = useState<Movie[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const loadAllMovies = async () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    if (!query.trim()) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+
+    timeoutRef.current = setTimeout(async () => {
       try {
-        const [popular, topRated, upcoming, nowPlaying, trending] =
-          await Promise.all([
-            fetchPopularMovies(),
-            fetchTopRatedMovies(),
-            fetchUpcomingMovies(),
-            fetchNowPlayingMovies(),
-            fetchTrendingMovies('week'),
-          ]);
-
-        // Merge all into a unique set (by id)
-        const merged = [
-          ...popular,
-          ...topRated,
-          ...upcoming,
-          ...nowPlaying,
-          ...trending,
-        ];
-        const uniqueMovies = Array.from(
-          new Map(merged.map(m => [m.id, m])).values(),
-        );
-
-        setAllMovies(uniqueMovies);
+        const movies = await searchMovies(query.trim());
+        setResults(movies);
       } catch (error) {
-        console.error('Error fetching movies:', error);
+        console.error('Search error:', error);
       } finally {
         setLoading(false);
       }
+    }, 500);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-
-    loadAllMovies();
-  }, []);
-
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredMovies([]);
-    } else {
-      const filtered = allMovies.filter(movie =>
-        movie.title.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-      setFilteredMovies(filtered);
-    }
-  }, [searchTerm, allMovies]);
+  }, [query]);
 
   const renderItem = ({ item, index }: { item: Movie; index: number }) => (
     <MovieCard
       movie={item}
       isFirst={index === 0}
-      isLast={index === filteredMovies.length - 1}
+      isLast={index === results.length - 1}
     />
   );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <SafeAreaView>
-          <TextComponent
-            text="Search"
+      <SafeAreaView style={styles.container}>
+        <ScreenHeader title="Search" />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Search movies..."
+          placeholderTextColor="#aaa"
+          value={query}
+          onChangeText={setQuery}
+        />
+
+        {loading ? (
+          <ActivityIndicator
             color={colors.primary}
-            variant="h1"
-            style={styles.title}
+            size="large"
+            style={{ marginTop: 20 }}
           />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Search movies..."
-            placeholderTextColor="#aaa"
-            value={searchTerm}
-            onChangeText={setSearchTerm}
+        ) : results.length === 0 ? (
+          <TextComponent
+            text={
+              query.trim() === ''
+                ? 'Start typing to search...'
+                : 'No results found.'
+            }
+            color={colors.white}
+            style={styles.noResults}
           />
-
-          {loading ? (
-            <ActivityIndicator
-              color={colors.primary}
-              size="large"
-              style={{ marginTop: 20 }}
-            />
-          ) : filteredMovies.length === 0 && searchTerm.trim() !== '' ? (
-            <TextComponent
-              text="No results found."
-              color={colors.white}
-              style={styles.noResults}
-            />
-          ) : (
-            <FlatList
-              data={filteredMovies}
-              keyExtractor={item => item.id.toString()}
-              renderItem={renderItem}
-              numColumns={3}
-              columnWrapperStyle={styles.row}
-              contentContainerStyle={styles.resultsContainer}
-            />
-          )}
-        </SafeAreaView>
-      </View>
+        ) : (
+          <FlatList
+            data={results}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItem}
+            numColumns={3}
+            columnWrapperStyle={styles.row}
+            contentContainerStyle={styles.resultsContainer}
+          />
+        )}
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };
@@ -133,10 +106,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.darkMode,
     paddingHorizontal: 16,
-  },
-  title: {
-    marginBottom: 12,
-    textAlign: 'center',
   },
   input: {
     backgroundColor: colors.darkLight,

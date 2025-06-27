@@ -8,19 +8,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../navigation/types';
+import ScreenHeader from '../components/ScreenHeader';
 
 const ProfileScreen = () => {
   const { wishlist } = useWishlist();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <TextComponent
-        text="Profile"
-        color={colors.primary}
-        variant="h1"
-        style={styles.title}
-      />
+    <SafeAreaView style={styles.container}>
+      <ScreenHeader title="Profile" />
 
       <View style={styles.content}>
         <View style={styles.profileSection}>
@@ -89,15 +85,10 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  safeContainer: {
+  container: {
     flex: 1,
     backgroundColor: colors.darkMode,
     paddingHorizontal: 16,
-  },
-  title: {
-    marginTop: 10,
-    marginBottom: 16,
-    textAlign: 'center',
   },
   content: {
     flex: 1,
