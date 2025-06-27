@@ -15,6 +15,7 @@ This open source project focuses on learning and applying modern React Native co
 Developed as part of the **Digital Academy Bootcamp** at **AssureSoft**.
 
 Team Demo: 
+
 App Demo: https://youtu.be/9X2jDw7je3Y
 ---
 
