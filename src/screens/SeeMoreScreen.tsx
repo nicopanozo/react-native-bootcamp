@@ -14,6 +14,7 @@ import { theme } from '../config/theme';
 import TextComponent from '../components/Text';
 import MovieCard from '../components/MovieCard';
 import {
+  fetchMoviesByGenre,
   fetchTopRatedMovies,
   fetchMarvelMovies,
   fetchActionMovies,
@@ -23,7 +24,7 @@ import {
 } from '../api/tmdb';
 import { Movie } from '../types';
 
-type SeeMoreScreenRouteProp = RouteProp<RootStackParamList, 'SeeMore'>;
+type SeeMoreRouteProp = RouteProp<RootStackParamList, 'SeeMore'>;
 type ListItem = Movie | { id: string; empty: true };
 
 const { width } = Dimensions.get('window');
@@ -31,55 +32,53 @@ const numColumns = 3;
 const movieWidth = (width - 48) / numColumns;
 
 const SeeMoreScreen = () => {
-  const route = useRoute<SeeMoreScreenRouteProp>();
-  const { category } = route.params;
-
+  const { genreId, endpoint } = useRoute<SeeMoreRouteProp>().params;
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    (async () => {
+      setLoading(true);
+      let fetchedMovies: Movie[] = [];
       try {
-        setLoading(true);
-        let fetchedMovies: Movie[] = [];
-
-        switch (category) {
-          case 'Marvel studios':
-            fetchedMovies = await fetchMarvelMovies();
-            break;
-          case 'Best movies':
-            fetchedMovies = await fetchTopRatedMovies();
-            break;
-          case 'Action movies':
-            fetchedMovies = await fetchActionMovies();
-            break;
-          case 'Trending now':
-            fetchedMovies = await fetchTrendingMovies();
-            break;
-          case 'Coming soon':
-            fetchedMovies = await fetchUpcomingMovies();
-            break;
-          default:
-            fetchedMovies = await fetchPopularMovies();
+        if (typeof genreId === 'number') {
+          fetchedMovies = await fetchMoviesByGenre(genreId);
+        } else if (endpoint) {
+          switch (endpoint) {
+            case 'marvel':
+              fetchedMovies = await fetchMarvelMovies();
+              break;
+            case 'topRated':
+              fetchedMovies = await fetchTopRatedMovies();
+              break;
+            case 'action':
+              fetchedMovies = await fetchActionMovies();
+              break;
+            case 'trending':
+              fetchedMovies = await fetchTrendingMovies();
+              break;
+            case 'upcoming':
+              fetchedMovies = await fetchUpcomingMovies();
+              break;
+            case 'popular':
+            default:
+              fetchedMovies = await fetchPopularMovies();
+          }
+        } else {
+          fetchedMovies = await fetchPopularMovies();
         }
-
-        setMovies(fetchedMovies);
-      } catch (err) {
-        console.error('Error fetching movies:', err);
-        setError('Failed to load movies. Please try again later.');
+      } catch (e) {
+        console.error(e);
       } finally {
+        setMovies(fetchedMovies);
         setLoading(false);
       }
-    };
-
-    fetchMovies();
-  }, [category]);
+    })();
+  }, [genreId, endpoint]);
 
   const totalItems = movies.length;
   const numEmptyItems =
     totalItems % numColumns === 0 ? 0 : numColumns - (totalItems % numColumns);
-
   const extendedMovies: ListItem[] = [
     ...movies,
     ...Array.from({ length: numEmptyItems }, (_, index) => ({
@@ -89,10 +88,7 @@ const SeeMoreScreen = () => {
   ];
 
   const renderMovieItem = ({ item }: { item: ListItem }) => {
-    if ('empty' in item) {
-      return <View style={styles.placeholder} />;
-    }
-
+    if ('empty' in item) return <View style={styles.placeholder} />;
     return (
       <View style={{ width: movieWidth }}>
         <MovieCard movie={item} isFirst={false} isLast={false} />
@@ -109,24 +105,6 @@ const SeeMoreScreen = () => {
         />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.secondary} />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor={theme.colors.darkLight}
-        />
-        <View style={styles.errorContainer}>
-          <TextComponent
-            text={error}
-            variant="body"
-            color={theme.colors.white}
-          />
         </View>
       </SafeAreaView>
     );
@@ -160,14 +138,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.darkLight,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.darkLight,
-    padding: 20,
   },
   listContent: {
     paddingBottom: 20,

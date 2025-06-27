@@ -1,36 +1,76 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  LayoutChangeEvent,
+} from 'react-native';
 import TextComponent from './Text';
 import { colors } from '../config/colors';
 import { theme } from '../config/theme';
+import { CATEGORIES, Category } from '../constants/categories';
 
 interface TopNavigationProps {
-  onCategoryChange?: (category: string) => void;
+  onCategoryChange?: (category: Category) => void;
 }
 
-const categories = ['All', 'Romance', 'Sport', 'Kids', 'Horror'];
-
 const TopNavigation: React.FC<TopNavigationProps> = ({ onCategoryChange }) => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  const [itemLayouts, setItemLayouts] = useState<{
+    [key in Category]?: { x: number; width: number };
+  }>({});
 
-  const handleCategoryPress = (category: string) => {
+  const indicatorX = useRef(new Animated.Value(0)).current;
+  const indicatorWidth = useRef(new Animated.Value(0)).current;
+
+  const handleCategoryPress = (category: Category) => {
     setSelectedCategory(category);
     onCategoryChange?.(category);
   };
 
+  useEffect(() => {
+    const layout = itemLayouts[selectedCategory];
+    if (layout) {
+      Animated.parallel([
+        Animated.spring(indicatorX, {
+          toValue: layout.x,
+          useNativeDriver: false,
+        }),
+        Animated.spring(indicatorWidth, {
+          toValue: layout.width,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    }
+  }, [selectedCategory, itemLayouts]);
+
+  const handleItemLayout =
+    (category: Category) => (event: LayoutChangeEvent) => {
+      const { x, width } = event.nativeEvent.layout;
+      setItemLayouts(prev => ({ ...prev, [category]: { x, width } }));
+    };
+
   return (
     <View style={styles.container}>
       <View style={styles.sliderContainer}>
-        {categories.map(category => {
+        <Animated.View
+          style={[
+            styles.animatedIndicator,
+            {
+              transform: [{ translateX: indicatorX }],
+              width: indicatorWidth,
+            },
+          ]}
+        />
+        {CATEGORIES.map(category => {
           const isSelected = selectedCategory === category;
           return (
             <TouchableOpacity
               key={category}
-              style={[
-                styles.sliderItem,
-                isSelected && styles.selectedSliderItem,
-              ]}
+              style={styles.sliderItem}
               onPress={() => handleCategoryPress(category)}
+              onLayout={handleItemLayout(category)}
               activeOpacity={0.7}
             >
               <TextComponent
@@ -67,19 +107,21 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 2,
     width: '90%',
+    position: 'relative',
   },
   sliderItem: {
     flex: 1,
     flexBasis: 0,
-    flexShrink: 1,
     paddingVertical: 16,
     paddingHorizontal: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
-    minWidth: 0,
   },
-  selectedSliderItem: {
+  animatedIndicator: {
+    position: 'absolute',
+    top: 4,
+    bottom: 4,
+    left: 0,
     backgroundColor: colors.white,
     borderRadius: 50,
   },
